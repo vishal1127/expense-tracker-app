@@ -24,7 +24,9 @@
             height="100"
           />
           <h1 class="h3 mb-3 fw-normal">Register here!</h1>
-
+          <p id="errormsg" class="errormsg" style="display: none">
+            User with this email is already registered
+          </p>
           <div class="row">
             <label for="name" class="col-sm-3 col-form-label">Full Name</label>
             <div class="col-sm-9">
@@ -43,7 +45,7 @@
               <input
                 type="email"
                 class="form-control mb-3"
-                id="name"
+                id="email"
                 placeholder="john@xyz.com"
                 required
               />
@@ -63,7 +65,7 @@
               />
             </div>
           </div>
-          <button class="btn btn btn-primary mt-2" type="submit">
+          <button id="create" class="btn btn btn-primary mt-2" type="submit">
             Create account
           </button>
           <p class="mt-2">
@@ -78,5 +80,7 @@
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
       crossorigin="anonymous"
     ></script>
+    <script src="../app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
   </body>
 </html>
