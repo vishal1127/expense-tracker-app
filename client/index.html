@@ -15,7 +15,7 @@
   <body class="text-center main-bg">
     <main class="form-signin m-auto">
       <div class="signup-form p-4 m-0">
-        <form action="./pages/mainapp.html">
+        <form action="#">
           <img
             class="mb-4"
             src="./static/img/logo.png"
@@ -24,15 +24,16 @@
             height="100"
           />
           <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
+          <p id="errormsg" class="errormsg" style="display: none"></p>
           <div class="row">
             <label for="name" class="col-sm-3 col-form-label">Email</label>
             <div class="col-sm-9">
               <input
                 type="email"
                 class="form-control mb-3"
-                id="name"
+                id="email"
                 placeholder="john@xyz.com"
+                required
               />
             </div>
           </div>
@@ -46,10 +47,11 @@
                 class="form-control"
                 id="password"
                 placeholder="Password"
+                required
               />
             </div>
           </div>
-          <button class="btn btn btn-primary mt-2" type="submit">
+          <button id="signin" class="btn btn btn-primary mt-2" type="submit">
             Sign in
           </button>
           <p class="mt-2">
@@ -63,5 +65,7 @@
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
       crossorigin="anonymous"
     ></script>
+    <script src="./app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
   </body>
 </html>
