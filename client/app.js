@@ -19,6 +19,7 @@ async function createAccount(e) {
     };
     await axios.post("http://localhost:3000/createUser", userData);
   } catch (err) {
+    errMsg.innerText = err.response.data.message;
     errMsg.style.display = "block";
     setTimeout(() => {
       errMsg.style.display = "none";
@@ -30,16 +31,18 @@ async function createAccount(e) {
 async function accountLogin(e) {
   console.log("values", emailField.value, passwordField.value);
   e.preventDefault();
-  //   try {
-  //     let userData = {
-  //       email: emailField.value,
-  //       password: passwordField.value,
-  //     };
-  //     await axios.post("http://localhost:3000/signInUser", userData);
-  //   } catch (err) {
-  //     errMsg.style.display = "block";
-  //     setTimeout(() => {
-  //       errMsg.style.display = "none";
-  //     }, 5000);
-  //   }
+  try {
+    let userData = {
+      email: emailField.value,
+      password: passwordField.value,
+    };
+    await axios.post("http://localhost:3000/signInUser", userData);
+  } catch (err) {
+    console.log(err);
+    errMsg.innerText = err.response.data.message;
+    errMsg.style.display = "block";
+    setTimeout(() => {
+      errMsg.style.display = "none";
+    }, 5000);
+  }
 }
