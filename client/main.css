@@ -13,6 +13,11 @@ body {
   overflow: scroll;
 }
 
+.expense-body {
+  background-color: rgb(138, 252, 153);
+  height: 100vh;
+}
+
 .tabs {
   width: 600px !important;
 }
@@ -157,8 +162,10 @@ body {
 
 .add-btn {
   border-radius: 24px;
-  height: 44px;
+  height: 49px;
   width: 49px;
+  background-color: rgb(30, 196, 77);
+  border-color: rgb(30, 196, 77);
 }
 
 .nav-tabs {

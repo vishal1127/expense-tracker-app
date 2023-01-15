@@ -25,8 +25,8 @@ exports.createUser = async (req, res, next) => {
       email: email,
       password: hashedPassword,
     });
-    const token = jwt.sign({ email: email, id: result.id }, SECRET_KEY);
-    res.status(201).json({ user: result, token: token });
+    // const token = jwt.sign({ email: email, id: result.id }, SECRET_KEY);
+    res.status(201).json({ user: result, success: true });
   } catch (err) {
     res.status(500).send("Something went wrong.");
   }
@@ -45,8 +45,10 @@ exports.signinUser = async (req, res, next) => {
     );
     if (!matchPassword)
       return res.status(401).json({ message: "Invalid password" });
-
-    const token = jwt.sign({ email: email, id: existingUser.id }, SECRET_KEY);
+    const token = jwt.sign(
+      { email: email, id: existingUser[0].id },
+      SECRET_KEY
+    );
     res.status(201).json({ user: existingUser, token: token });
   } catch (error) {
     console.log("error", error);
