@@ -10,12 +10,25 @@ const addExpenseBtn = document.getElementById("add-expense");
 const amountField = document.getElementById("amount-text");
 const categoryField = document.getElementById("category-text");
 const descriptionField = document.getElementById("description-text");
+const premiumBtn = document.getElementById("premium-btn");
+const signOutBtn = document.getElementById("signout-btn");
+const premiumStatus = document.getElementById("premium-status");
+
 let expenseTable;
 let expenseList;
+
 window.addEventListener("DOMContentLoaded", listAllExpenses);
 addExpenseBtn.addEventListener("click", addExpense);
+premiumBtn.addEventListener("click", buyPremium);
+signOutBtn.addEventListener("click", signOut);
 
 const userDetails = JSON.parse(localStorage.getItem("User Details"));
+if (userDetails) {
+  premiumBtn.style.display =
+    userDetails.subscribtion == "Premium" ? "none" : "block";
+  premiumStatus.style.display =
+    userDetails.subscribtion == "Free" ? "none" : "block";
+}
 
 userName.innerHTML = `<p style="margin:0px">${userDetails.name}</p>`;
 
@@ -107,6 +120,51 @@ function listExpense(expense, id) {
     </td></tr>`;
 }
 
-function hideeModal() {
-  expenseModal.modal("hide");
+async function buyPremium(e) {
+  try {
+    const payment = await axios.get(
+      "http://localhost:3000/purchase/buyPremium",
+      {
+        headers: {
+          authorization: localStorage.getItem("Authorization"),
+        },
+      }
+    );
+    console.log("payment response 1", payment);
+    var options = {
+      key: payment.data.key_id,
+      order_id: payment.data.order.id,
+      handler: async function (payment) {
+        await axios.post(
+          "http://localhost:3000/purchase/updatePaymentStatus",
+          {
+            order_id: options.order_id,
+            payment_id: payment.razorpay_payment_id,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem("Authorization"),
+            },
+          }
+        );
+        console.log("You are a premium user");
+        alert("You are a premium user");
+      },
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
+    e.preventDefault();
+
+    rzp.on("payment.failed", function (payment) {
+      console.log("on failed payment", payment);
+      alert("Payment unsuccessful");
+    });
+  } catch (error) {
+    console.log("error on buy", error);
+  }
+}
+
+function signOut() {
+  localStorage.clear();
+  location.href = "../index.html";
 }

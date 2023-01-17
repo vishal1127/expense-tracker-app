@@ -17,50 +17,49 @@
   <body>
     <!-- navbar -->
     <header class="p-3 border-bottom bg-dark">
-      <div class="container d-flex">
-        <div class="d-flex flex-wrap">
+      <div class=" container d-flex">
+        <div class="p-2 flex-grow-1" style="color: aliceblue;"><a
+          href="#"
+          class="d-flex align-items-center mb-2 mb-lg-0 text-light text-decoration-none"
+        >
+          <img
+            src="../static/img/logo.png"
+            alt="Logo"
+            width="40"
+            height="40"
+            class="d-inline-block align-text-top"
+            style="margin-right: 9px"
+          />
+          Expense Tracker
+        </a></div>
+        <div class="p-2" style="color: aliceblue;">
+          <button id="premium-btn" type="button" class="btn btn-outline-warning">Buy Premium</button>
+          <button id="premium-status" type="button" class="btn btn-outline-warning" disabled>Premium User</button></div>
+        <div class="p-2" style="color: aliceblue;"><div class="dropdown text-end">
           <a
             href="#"
-            class="d-flex align-items-center mb-2 mb-lg-0 text-light text-decoration-none"
+            class="d-block link-light text-decoration-none dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
             <img
-              src="../static/img/logo.png"
-              alt="Logo"
-              width="40"
-              height="40"
-              class="d-inline-block align-text-top"
-              style="margin-right: 9px"
+              src="../static/img/profile.png"
+              alt="profile"
+              class="rounded-circle"
+              width="32"
+              height="32"
             />
-            Expense Tracker
           </a>
-        </div>
-        <div class="ms-auto mt-1">
-          <div class="dropdown text-end">
-            <a
-              href="#"
-              class="d-block link-light text-decoration-none dropdown-toggle"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <img
-                src="../static/img/profile.png"
-                alt="mdo"
-                class="rounded-circle"
-                width="32"
-                height="32"
-              />
-            </a>
-            <ul class="dropdown-menu text-small">
-              <!-- <li><a class="dropdown-item" href="#">Edit</a></li> -->
-              <li class="UserName dropdown-item"></li>
-              <!-- <li><a class="dropdown-item" href="#">Settings</a></li> -->
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a class="dropdown-item" href="../index.html">Sign out</a>
-              </li>
-            </ul>
-          </div>
-        </div>
+          <ul class="dropdown-menu text-small">
+            <!-- <li><a class="dropdown-item" href="#">Edit</a></li> -->
+            <li class="UserName dropdown-item"></li>
+            <!-- <li><a class="dropdown-item" href="#">Settings</a></li> -->
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a id="signout-btn" class="dropdown-item">Sign out</a>
+            </li>
+          </ul>
+        </div></div>
       </div>
     </header>
     <main class="expense-body p-3">
@@ -77,24 +76,6 @@
             </tr>
           </thead>
           <tbody id="expense-list-table" class="table-group-divider">
-            <tr>
-              <!-- <th scope="row">3</th> -->
-              <td>Larry the Bird</td>
-              <td>Thornton</td>
-              <td>Thornton</td>
-              <td>
-                <button type="button" class="btn btn-warning btn-sm">
-                  Edit
-                </button>
-                <button
-                  id="delete-expense"
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
         <!-- add expense button -->
@@ -185,6 +166,7 @@
       feather.replace();
     </script>
     <script src="../app.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
       integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
