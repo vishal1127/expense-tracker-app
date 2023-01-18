@@ -10,8 +10,8 @@ exports.purchasePremium = async (req, res, next) => {
       },
     });
     var rzp = new Razorpay({
-      key_id: "rzp_test_uPQLyQdNtvDS9a",
-      key_secret: "R3dTCn6GsUjMD6aaRJcWXxhH",
+      key_id: "rzp_test_NAGryNdrcUVvpT",
+      key_secret: "cHZfBEoityvyOTc25ORei66m",
     });
     const amount = 2500;
 

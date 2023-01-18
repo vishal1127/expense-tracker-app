@@ -17,11 +17,13 @@ app.use(cors());
 const userRoutes = require("./routes/user");
 const expenseRoutes = require("./routes/expense");
 const purchaseRoutes = require("./routes/purchase");
+const premiumRoutes = require("./routes/premium");
 
 app.use(userRoutes);
 app.use(authMiddleware);
 app.use(expenseRoutes);
 app.use(purchaseRoutes);
+app.use(premiumRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);

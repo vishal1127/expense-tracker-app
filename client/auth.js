@@ -4,6 +4,7 @@ const nameField = document.getElementById("name");
 const emailField = document.getElementById("email");
 const passwordField = document.getElementById("password");
 const errMsg = document.getElementById("errormsg");
+const successMsg = document.getElementById("successmsg");
 
 if (signUpBtn) signUpBtn.addEventListener("click", createAccount);
 if (signInBtn) signInBtn.addEventListener("click", accountLogin);
@@ -21,7 +22,20 @@ async function createAccount(e) {
         email: emailField.value,
         password: passwordField.value,
       };
-      await axios.post("http://localhost:3000/createUser", userData);
+      const response = await axios.post(
+        "http://localhost:3000/createUser",
+        userData
+      );
+      if (response) {
+        nameField.value = "";
+        emailField.value = "";
+        passwordField.value = "";
+        successMsg.innerText = "Account created successfuly";
+        successMsg.style.display = "block";
+        setTimeout(() => {
+          successMsg.style.display = "none";
+        }, 5000);
+      }
     } catch (err) {
       errMsg.innerText = err.response.data.message;
       errMsg.style.display = "block";

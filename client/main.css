@@ -197,6 +197,13 @@ body {
   color: white;
 }
 
+.successmsg {
+  display: none;
+  background-color: rgb(25, 136, 25);
+  border-radius: 20px;
+  color: white;
+}
+
 @media screen and (max-width: 768px) {
   .daily-date-row {
     grid-template-columns: 40px 60px 125px 115px 30px;

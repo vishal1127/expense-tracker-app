@@ -13,6 +13,7 @@ const descriptionField = document.getElementById("description-text");
 const premiumBtn = document.getElementById("premium-btn");
 const signOutBtn = document.getElementById("signout-btn");
 const premiumStatus = document.getElementById("premium-status");
+const leaderboardBtn = document.getElementById("leaderboard-btn");
 
 let expenseTable;
 let expenseList;
@@ -23,12 +24,6 @@ premiumBtn.addEventListener("click", buyPremium);
 signOutBtn.addEventListener("click", signOut);
 
 const userDetails = JSON.parse(localStorage.getItem("User Details"));
-if (userDetails) {
-  premiumBtn.style.display =
-    userDetails.subscribtion == "Premium" ? "none" : "block";
-  premiumStatus.style.display =
-    userDetails.subscribtion == "Free" ? "none" : "block";
-}
 
 userName.innerHTML = `<p style="margin:0px">${userDetails.name}</p>`;
 
@@ -67,6 +62,7 @@ async function addExpense(e) {
 }
 
 async function listAllExpenses() {
+  updateLinks();
   expenseList = await axios.get("http://localhost:3000/getExpenseList", {
     headers: {
       authorization: localStorage.getItem("Authorization"),
@@ -135,20 +131,33 @@ async function buyPremium(e) {
       key: payment.data.key_id,
       order_id: payment.data.order.id,
       handler: async function (payment) {
-        await axios.post(
-          "http://localhost:3000/purchase/updatePaymentStatus",
-          {
-            order_id: options.order_id,
-            payment_id: payment.razorpay_payment_id,
-          },
-          {
-            headers: {
-              authorization: localStorage.getItem("Authorization"),
+        await axios
+          .post(
+            "http://localhost:3000/purchase/updatePaymentStatus",
+            {
+              order_id: options.order_id,
+              payment_id: payment.razorpay_payment_id,
             },
-          }
-        );
-        console.log("You are a premium user");
-        alert("You are a premium user");
+            {
+              headers: {
+                authorization: localStorage.getItem("Authorization"),
+              },
+            }
+          )
+          .then(() => {
+            console.log(
+              "You are a premium user",
+              JSON.parse(localStorage.getItem("User Details"))
+            );
+            alert("You are a premium user");
+            const newUserDetails = { ...userDetails, subscribtion: "Premium" };
+            console.log("new user details", newUserDetails);
+            localStorage.setItem(
+              "User Details",
+              JSON.stringify(newUserDetails)
+            );
+            updateLinks();
+          });
       },
     };
     const rzp = new Razorpay(options);
@@ -167,4 +176,16 @@ async function buyPremium(e) {
 function signOut() {
   localStorage.clear();
   location.href = "../index.html";
+}
+
+function updateLinks() {
+  const userDetails = JSON.parse(localStorage.getItem("User Details"));
+  if (userDetails) {
+    premiumBtn.style.display =
+      userDetails.subscribtion == "Premium" ? "none" : "block";
+    premiumStatus.style.display =
+      userDetails.subscribtion == "Free" ? "none" : "block";
+    leaderboardBtn.style.display =
+      userDetails.subscribtion == "Free" ? "none" : "block";
+  }
 }

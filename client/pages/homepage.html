@@ -33,8 +33,9 @@
           Expense Tracker
         </a></div>
         <div class="p-2" style="color: aliceblue;">
-          <button id="premium-btn" type="button" class="btn btn-outline-warning">Buy Premium</button>
-          <button id="premium-status" type="button" class="btn btn-outline-warning" disabled>Premium User</button></div>
+          <button id="premium-btn" type="button" class="btn btn-outline-warning" style="display: none;">Buy Premium</button>
+          <!-- <button id="premium-status" type="button" class="btn btn-outline-warning">See Leaderboard</button></div> -->
+          <button id="premium-status" type="button" class="btn btn-outline-warning" style="display: none;" disabled>Premium User</button></div>
         <div class="p-2" style="color: aliceblue;"><div class="dropdown text-end">
           <a
             href="#"
@@ -53,10 +54,13 @@
           <ul class="dropdown-menu text-small">
             <!-- <li><a class="dropdown-item" href="#">Edit</a></li> -->
             <li class="UserName dropdown-item"></li>
-            <!-- <li><a class="dropdown-item" href="#">Settings</a></li> -->
+            <!-- <li><a class="dropdown-item" href="#"1>Settings</a></li> -->
+            <li>
+              <a id="leaderboard-btn" href="./leaderboard.html" style="cursor: pointer; display: none" class="dropdown-item">See Leaderboard</a>
+            </li>
             <li><hr class="dropdown-divider" /></li>
             <li>
-              <a id="signout-btn" class="dropdown-item">Sign out</a>
+              <a id="signout-btn" style="cursor: pointer;" class="dropdown-item">Sign out</a>
             </li>
           </ul>
         </div></div>
