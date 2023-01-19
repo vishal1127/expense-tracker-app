@@ -1,5 +1,4 @@
 require("dotenv").config();
-// console.log("process envvvvvvvv-------", process.env.NODE_ENV_RAZORPAY_KEY_ID);
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
