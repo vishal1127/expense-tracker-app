@@ -18,15 +18,13 @@ async function getLeaderboard() {
         authorization: localStorage.getItem("Authorization"),
       },
     });
-    console.log("response leaderboard", response);
     for (listData of response.data.leaderboardList) {
-      console.log(listData);
-      leaderboardList.innerHTML += `<li class="list-group-item list-group-item-dark">Name: ${
+      leaderboardList.innerHTML += `<li class="list-group-item list-group-item-primary">Name: ${
         listData.name
       } Total Expense: ${listData.totalAmount ? listData.totalAmount : 0}</li>`;
     }
   } catch (error) {
-    console.log("error during fetching leaderboard", error);
+    console.log("Error:", error);
   }
 }
 

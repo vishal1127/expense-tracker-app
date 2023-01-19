@@ -20,10 +20,9 @@ exports.getLeaderboard = async (req, res, next) => {
       group: ["user.id"],
       order: [["totalAmount", "DESC"]],
     });
-    console.log("leaderboard--------->", leaderboardList);
     res.status(200).json({ leaderboardList: leaderboardList, success: true });
   } catch (error) {
-    console.log("error getting leaderboard", error);
+    console.log("Error:", error);
     res.status(500).json({ message: "Something went wrong", success: false });
   }
 };

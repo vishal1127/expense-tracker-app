@@ -1,9 +1,3 @@
-// const expenseModal = new bootstrap.Modal("#expenseModal", {
-//   keyboard: false,
-// });
-// console.log("bootstrap", bootstrap);
-
-// import "bootstrap";
 const expenseModal = document.querySelector("#expenseModal");
 const userName = document.querySelector(".UserName");
 const addExpenseBtn = document.getElementById("add-expense");
@@ -56,7 +50,7 @@ async function addExpense(e) {
         //   expenseModal.hide();
       }
     } catch (error) {
-      console.log("error fe", error);
+      console.log("Error:", error);
     }
   }
 }
@@ -76,7 +70,6 @@ async function listAllExpenses() {
 }
 
 async function deleteExpense(id) {
-  console.log("expense delete btn clicked ith id", id);
   const deletedExpense = await axios.delete(
     `http://localhost:3000/deleteExpense/${id}`,
     {
@@ -86,7 +79,6 @@ async function deleteExpense(id) {
     }
   );
   if (deletedExpense) {
-    console.log("Expense deleted");
     const expenseToDelete = document.getElementById(id);
     expenseToDelete.remove();
   }
@@ -126,7 +118,6 @@ async function buyPremium(e) {
         },
       }
     );
-    console.log("payment response 1", payment);
     var options = {
       key: payment.data.key_id,
       order_id: payment.data.order.id,
@@ -145,7 +136,6 @@ async function buyPremium(e) {
             }
           )
           .then((response) => {
-            console.log("You are a premium user", response);
             alert("You are a premium user");
             localStorage.setItem("Authorization", response.data.token);
             updateLinks();
@@ -157,11 +147,10 @@ async function buyPremium(e) {
     e.preventDefault();
 
     rzp.on("payment.failed", function (payment) {
-      console.log("on failed payment", payment);
       alert("Payment unsuccessful");
     });
   } catch (error) {
-    console.log("error on buy", error);
+    console.log("Error:", error);
   }
 }
 

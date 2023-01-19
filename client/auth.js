@@ -9,7 +9,7 @@ const successMsg = document.getElementById("successmsg");
 
 if (signUpBtn) signUpBtn.addEventListener("click", createAccount);
 if (signInBtn) signInBtn.addEventListener("click", accountLogin);
-sendResetLinkBtn.addEventListener("click", sendResetLink);
+if (sendResetLinkBtn) sendResetLinkBtn.addEventListener("click", sendResetLink);
 
 // signup
 async function createAccount(e) {
@@ -50,7 +50,6 @@ async function createAccount(e) {
 
 //signin
 async function accountLogin(e) {
-  console.log("values", emailField.value, passwordField.value);
   e.preventDefault();
   emailField.reportValidity();
   passwordField.reportValidity();
@@ -64,19 +63,17 @@ async function accountLogin(e) {
         "http://localhost:3000/signInUser",
         userData
       );
-      console.log("reposne login", response.data.user[0]);
-      const { name, email, isPremium } = response.data.user[0];
+      const { name, email, isPremium } = response.data.user;
       const userDetails = {
         name: name,
         email: email,
         subscribtion: isPremium ? "Premium" : "Free",
       };
-      console.log("useruser", userDetails);
       localStorage.setItem("User Details", JSON.stringify(userDetails));
       localStorage.setItem("Authorization", response.data.token);
       location.href = "./pages/homepage.html";
     } catch (err) {
-      console.log(err);
+      console.log("Error:", err);
       errMsg.innerText = err.response.data.message;
       errMsg.style.display = "block";
       setTimeout(() => {
@@ -101,6 +98,6 @@ async function sendResetLink(e) {
       );
     }
   } catch (error) {
-    console.log("error while sending reset link", error);
+    console.log("Error:", error);
   }
 }
