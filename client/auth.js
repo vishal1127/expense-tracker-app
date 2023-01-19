@@ -1,5 +1,6 @@
 const signUpBtn = document.getElementById("create");
 const signInBtn = document.getElementById("signin");
+const sendResetLinkBtn = document.getElementById("send-link");
 const nameField = document.getElementById("name");
 const emailField = document.getElementById("email");
 const passwordField = document.getElementById("password");
@@ -8,6 +9,7 @@ const successMsg = document.getElementById("successmsg");
 
 if (signUpBtn) signUpBtn.addEventListener("click", createAccount);
 if (signInBtn) signInBtn.addEventListener("click", accountLogin);
+sendResetLinkBtn.addEventListener("click", sendResetLink);
 
 // signup
 async function createAccount(e) {
@@ -81,5 +83,24 @@ async function accountLogin(e) {
         errMsg.style.display = "none";
       }, 5000);
     }
+  }
+}
+
+//reset password
+async function sendResetLink(e) {
+  e.preventDefault();
+  try {
+    emailField.reportValidity();
+    if (emailField.checkValidity()) {
+      const userEmail = {
+        email: emailField.value,
+      };
+      const resetLink = await axios.post(
+        "http://localhost:3000/password/forgotpassword",
+        userEmail
+      );
+    }
+  } catch (error) {
+    console.log("error while sending reset link", error);
   }
 }

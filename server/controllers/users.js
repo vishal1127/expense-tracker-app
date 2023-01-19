@@ -46,7 +46,11 @@ exports.signinUser = async (req, res, next) => {
     if (!matchPassword)
       return res.status(401).json({ message: "Invalid password" });
     const token = jwt.sign(
-      { email: email, id: existingUser[0].id },
+      {
+        email: email,
+        id: existingUser[0].id,
+        isPremium: existingUser[0].isPremium,
+      },
       SECRET_KEY
     );
     res.status(201).json({ user: existingUser, token: token });

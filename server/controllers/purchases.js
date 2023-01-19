@@ -1,6 +1,8 @@
 const Razorpay = require("razorpay");
 const Order = require("../models/order");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = "expense-app-secret-key";
 
 exports.purchasePremium = async (req, res, next) => {
   try {
@@ -17,7 +19,7 @@ exports.purchasePremium = async (req, res, next) => {
 
     rzp.orders.create({ amount, currency: "INR" }, (err, order) => {
       if (err) {
-        console.log("unhac errrrr-------", err);
+        console.log("error while creating payment", err);
         throw new Error(JSON.stringify(err));
       }
       user[0]
@@ -26,12 +28,12 @@ exports.purchasePremium = async (req, res, next) => {
           return res.status(201).json({ order, key_id: rzp.key_id });
         })
         .catch((err) => {
-          console.log("error rororororoororor", err);
+          console.log("error while sending payment", err);
           throw new Error(err);
         });
     });
   } catch (error) {
-    console.log("error be while purchase", error);
+    console.log("error while purchase", error);
     res.status(403).json({ message: "Something went wrong", error: err });
   }
 };
@@ -56,9 +58,19 @@ exports.updatePaymentStatus = async (req, res, next) => {
       const updateStatus = await order[0].save();
       user[0].isPremium = true;
       const updateUserInfo = await user[0].save();
-      return res
-        .status(202)
-        .json({ message: "Transaction successful", success: true });
+      const token = jwt.sign(
+        {
+          email: user[0].email,
+          id: user[0].id,
+          isPremium: user[0].isPremium,
+        },
+        SECRET_KEY
+      );
+      return res.status(202).json({
+        token: token,
+        message: "Transaction successful",
+        success: true,
+      });
       //   order
       //     .update({ paymentId: paymentId, status: "SUCCESSFUL" })
       //     .then(() => {

@@ -144,18 +144,10 @@ async function buyPremium(e) {
               },
             }
           )
-          .then(() => {
-            console.log(
-              "You are a premium user",
-              JSON.parse(localStorage.getItem("User Details"))
-            );
+          .then((response) => {
+            console.log("You are a premium user", response);
             alert("You are a premium user");
-            const newUserDetails = { ...userDetails, subscribtion: "Premium" };
-            console.log("new user details", newUserDetails);
-            localStorage.setItem(
-              "User Details",
-              JSON.stringify(newUserDetails)
-            );
+            localStorage.setItem("Authorization", response.data.token);
             updateLinks();
           });
       },
@@ -179,13 +171,26 @@ function signOut() {
 }
 
 function updateLinks() {
-  const userDetails = JSON.parse(localStorage.getItem("User Details"));
-  if (userDetails) {
-    premiumBtn.style.display =
-      userDetails.subscribtion == "Premium" ? "none" : "block";
-    premiumStatus.style.display =
-      userDetails.subscribtion == "Free" ? "none" : "block";
-    leaderboardBtn.style.display =
-      userDetails.subscribtion == "Free" ? "none" : "block";
-  }
+  const token = localStorage.getItem("Authorization");
+  const tokenData = parseJwt(token);
+  const membership = tokenData.isPremium;
+  premiumBtn.style.display = membership ? "none" : "block";
+  premiumStatus.style.display = membership ? "block" : "none";
+  leaderboardBtn.style.display = membership ? "block" : "none";
+}
+
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
 }

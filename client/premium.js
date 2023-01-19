@@ -19,12 +19,11 @@ async function getLeaderboard() {
       },
     });
     console.log("response leaderboard", response);
-    response.data.leaderboardList.sort((a, b) => {
-      return b.totalExpense - a.totalExpense;
-    });
     for (listData of response.data.leaderboardList) {
       console.log(listData);
-      leaderboardList.innerHTML += `<li class="list-group-item list-group-item-dark">Name: ${listData.name} Total Expense: ${listData.totalExpense}</li>`;
+      leaderboardList.innerHTML += `<li class="list-group-item list-group-item-dark">Name: ${
+        listData.name
+      } Total Expense: ${listData.totalAmount ? listData.totalAmount : 0}</li>`;
     }
   } catch (error) {
     console.log("error during fetching leaderboard", error);
@@ -32,11 +31,26 @@ async function getLeaderboard() {
 }
 
 function updateLinks() {
-  const userDetails = JSON.parse(localStorage.getItem("User Details"));
-  if (userDetails) {
-    premiumStatus.style.display =
-      userDetails.subscribtion == "Free" ? "none" : "block";
-  }
+  const token = localStorage.getItem("Authorization");
+  const tokenData = parseJwt(token);
+  const membership = tokenData.isPremium;
+  premiumStatus.style.display = membership ? "block" : "none";
+}
+
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
 }
 
 function signOut() {
