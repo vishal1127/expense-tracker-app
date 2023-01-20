@@ -18,7 +18,11 @@ exports.addExpense = async (req, res, next) => {
     });
     return res
       .status(201)
-      .json({ message: "Expense successfuly added", success: true });
+      .json({
+        expense: newExpense,
+        message: "Expense successfuly added",
+        success: true,
+      });
   } catch (error) {
     console.log("Error:", error);
     res.status(500).json({ message: "Somthing went wrong", success: false });

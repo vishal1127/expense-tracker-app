@@ -43,7 +43,8 @@ async function addExpense(e) {
         }
       );
       if (result) {
-        listExpense(expenseData, expenseList.data.length);
+        console.log("result ", result);
+        listExpense(result.data.expense, expenseList.data.length);
         amountField.value = "";
         categoryField.value = "Groceries";
         descriptionField.value = "";
@@ -85,10 +86,16 @@ async function deleteExpense(id) {
 }
 
 function listExpense(expense, id) {
-  expenseTable.innerHTML += `<tr id="${expense.id}"><td>${id + 1}</td>
+  let date = new Date(expense.createdAt).toLocaleDateString().split("/");
+  date = date[1] + "-" + date[0] + "-" + date[2];
+  console.log("expense", expense);
+  expenseTable.innerHTML += `<tr id="${expense.id}">
+  <td>${id + 1}</td>
+  <td>${date}</td>
+  <td>${expense.description}</td>
+  <td>${expense.category}</td>
   <td>${expense.amount}</td>
-    <td>${expense.category}</td>
-    <td>${expense.description}</td>
+  <td>${expense.amount}</td>
     <td>
       <button 
       id="edit-expense"

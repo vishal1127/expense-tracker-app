@@ -68,21 +68,70 @@
     </header>
     <main class="expense-body p-3">
       <div class="container">
-        <!-- expense table -->
+        <!-- daily expense table -->
+        <h4 class="table-title">Daily</h4>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
               <th scope="col" class="column-size">#</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Category</th>
+              <th scope="col">Date</th>
               <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Income</th>
+              <th scope="col">Expense</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expense-list-table" class="table-group-divider">
+          </tbody>
+          <tfoot>
+            <td colspan="4"></td>
+            <td>Savings =</td>
+            <td colspan="2">123</td>
+          </tfoot>
+        
+        </table>
+        <!-- monthly expense table -->
+        <h4 class="table-title">Monthly</h4>
+        <table class="table table-responsive table-dark table-striped">
+          <thead>
+            <tr>
+              <th scope="col" class="column-size">#</th>
+              <th scope="col">Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Income</th>
+              <th scope="col">Expense</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expense-list-table" class="table-group-divider">
+          </tbody>
+          <tfoot>
+            <td colspan="4"></td>
+            <td>Savings =</td>
+            <td colspan="2">123</td>
+          </tfoot>
+        
+        </table>
+        <!-- yearly expense table -->
+        <h4 class="table-title">Yearly</h4>
+        <table class="table table-responsive table-dark table-striped">
+          <thead>
+            <tr>
+              <th scope="col" class="column-size">#</th>
+              <th scope="col">Month</th>
+              <th scope="col">Income</th>
+              <th scope="col">Expense</th>
+              <th scope="col">Savings</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody id="expense-list-table" class="table-group-divider">
           </tbody>
         </table>
-        <!-- add expense button -->
+        <div class="d-flex justify-content-end">
+          <!-- add expense button -->
         <div class="add-btn-div">
           <button
             type="button"
@@ -94,77 +143,87 @@
             <i data-feather="plus-circle"></i>
           </button>
         </div>
-        <!-- add expense modal -->
-        <div
-          class="modal fade"
-          id="expenseModal"
-          tabindex="-1"
-          aria-labelledby="expenseModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog modal-fullscreen-sm-down">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="expenseModalTitle">
-                  Add Expense
-                </h1>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <form class="row g-2">
-                  <div class="col-6 mb-3">
-                    <label for="amount-text" class="form-label">Amount:</label>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="amount-text"
-                      required
-                    />
-                  </div>
-                  <div class="col-6 mb-3">
-                    <label for="title-name" class="form-label">Category:</label>
-                    <select class="form-select" id="category-text" required>
-                      <!-- <option selected>Open this select menu</option> -->
-                      <option value="Groceries">Groceries</option>
-                      <option value="Fuel">Fuel</option>
-                      <option value="Ticket">Ticket</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label for="description-name" class="form-label"
-                      >Description:</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="description-text"
-                      required
-                    />
-                  </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button id="add-expense" type="submit" class="btn btn-primary">
-                  <!-- data-bs-dismiss="modal" -->
-                  Add
-                </button>
-              </div>
-            </form>
-            </div>
-          </div>
+        <!-- download report button -->
+        <div class="download-btn-div">
+          <button
+            type="button"
+            class="btn add-btn btn-primary"
+          >
+            <i data-feather="download"></i>
+          </button>
+        </div>
         </div>
       </div>
+      <!-- add expense modal -->
+      <div
+      class="modal fade"
+      id="expenseModal"
+      tabindex="-1"
+      aria-labelledby="expenseModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="expenseModalTitle">
+              Add Expense
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form class="row g-2">
+              <div class="col-6 mb-3">
+                <label for="amount-text" class="form-label">Amount:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="amount-text"
+                  required
+                />
+              </div>
+              <div class="col-6 mb-3">
+                <label for="title-name" class="form-label">Category:</label>
+                <select class="form-select" id="category-text" required>
+                  <!-- <option selected>Open this select menu</option> -->
+                  <option value="Groceries">Groceries</option>
+                  <option value="Fuel">Fuel</option>
+                  <option value="Ticket">Ticket</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="description-name" class="form-label"
+                  >Description:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="description-text"
+                  required
+                />
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button id="add-expense" type="submit" class="btn btn-primary">
+              <!-- data-bs-dismiss="modal" -->
+              Add
+            </button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
     </main>
     <script>
       feather.replace();

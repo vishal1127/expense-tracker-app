@@ -9,13 +9,17 @@ body {
 }
 
 body {
-  background-color: #f5f5f5;
-  overflow: scroll;
+  background-color: rgb(138, 252, 153);
+  overflow-y: scroll;
 }
 
 .expense-body {
   background-color: rgb(138, 252, 153);
   height: 100vh;
+}
+
+.table-title {
+  text-align: center;
 }
 
 .tabs {
@@ -155,17 +159,15 @@ body {
 }
 
 .add-btn-div {
-  display: grid;
-  justify-content: end;
-  margin-right: 4%;
+  margin-right: 2%;
 }
 
 .add-btn {
   border-radius: 24px;
   height: 49px;
   width: 49px;
-  background-color: rgb(30, 196, 77);
-  border-color: rgb(30, 196, 77);
+  background-color: rgb(15, 103, 40);
+  border-color: rgb(14, 83, 31);
 }
 
 .nav-tabs {
