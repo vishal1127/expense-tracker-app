@@ -9,12 +9,12 @@ body {
 }
 
 body {
-  background-color: rgb(138, 252, 153);
+  background-color: rgb(176 176 176);
   overflow-y: scroll;
 }
 
 .expense-body {
-  background-color: rgb(138, 252, 153);
+  background-color: rgb(176 176 176);
   height: 100vh;
 }
 

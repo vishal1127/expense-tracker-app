@@ -17,7 +17,7 @@ const monthlyTotalExpenseVal = document.getElementById(
 const downloadReportBtn = document.getElementById("download-report");
 
 let dailyExpenseTable, monthlyExpenseTable, yearlyExpenseTable;
-let expenseList;
+let expenseList, dailyExpenseList, monthlyExpenseList;
 
 window.addEventListener("DOMContentLoaded", listAllExpenses);
 addExpenseBtn.addEventListener("click", addExpense);
@@ -52,7 +52,7 @@ async function addExpense(e) {
       );
       if (result) {
         console.log("result ", result);
-        listExpense(result.data.expense, expenseList.data.length);
+        listAllExpenses();
         amountField.value = "";
         categoryField.value = "Groceries";
         descriptionField.value = "";
@@ -63,18 +63,52 @@ async function addExpense(e) {
     }
   }
 }
+// daily table pagination
+let dailyPageSize = 4;
+let dailyCurPage = 1;
+document
+  .querySelector(".daily-next")
+  .addEventListener("click", dailyNextPage, false);
+document
+  .querySelector(".daily-previous")
+  .addEventListener("click", dailyPreviousPage, false);
+
+function dailyPreviousPage() {
+  if (dailyCurPage > 1) dailyCurPage--;
+  listAllExpenses();
+}
+
+function dailyNextPage() {
+  if (dailyCurPage * dailyPageSize < dailyExpenseList.length) dailyCurPage++;
+  listAllExpenses();
+}
+
+// monthly table pagination
+let monthlyPageSize = 4;
+let monthlyCurPage = 1;
+document
+  .querySelector(".monthly-next")
+  .addEventListener("click", monthlyNextPage, false);
+document
+  .querySelector(".monthly-previous")
+  .addEventListener("click", monthlyPreviousPage, false);
+
+function monthlyPreviousPage() {
+  if (monthlyCurPage > 1) monthlyCurPage--;
+  listAllExpenses();
+}
+
+function monthlyNextPage() {
+  if (monthlyCurPage * monthlyPageSize < monthlyExpenseList.length)
+    monthlyCurPage++;
+  listAllExpenses();
+}
 
 async function listAllExpenses() {
+  let dailyTotalExp = 0;
+  let monthlyTotalExp = 0;
+  let yearlyMonthTotalExp = 0;
   try {
-    const downloadsList = await axios.get(
-      "http://localhost:3000/getExpenseDownloadsList",
-      {
-        headers: {
-          authorization: localStorage.getItem("Authorization"),
-        },
-      }
-    );
-    console.log("downloads List", downloadsList);
     updateLinks();
     expenseList = await axios.get("http://localhost:3000/getExpenseList", {
       headers: {
@@ -87,77 +121,83 @@ async function listAllExpenses() {
     monthlyExpenseTable.innerHTML = "";
     yearlyExpenseTable = document.getElementById("yearly-expense-list-table");
     yearlyExpenseTable.innerHTML = "";
+    //daily listing
+    dailyExpenseList = expenseList.data.filter((expense) => {
+      if (
+        new Date().toLocaleDateString() ==
+        new Date(expense.createdAt).toLocaleDateString()
+      )
+        return expense;
+    });
+    datewiseListing(
+      dailyExpenseList,
+      dailyExpenseTable,
+      dailyTotalExp,
+      dailyTotalExpenseVal,
+      dailyCurPage,
+      dailyPageSize
+    );
+    //monthly listing
+    monthlyExpenseList = expenseList.data.filter((expense) => {
+      if (new Date().getMonth() == new Date(expense.createdAt).getMonth()) {
+        return expense;
+      }
+    });
+    datewiseListing(
+      monthlyExpenseList,
+      monthlyExpenseTable,
+      monthlyTotalExp,
+      monthlyTotalExpenseVal,
+      monthlyCurPage,
+      monthlyPageSize
+    );
+    // dailyExpenseTable.innerHTML = result;
+
+    //yearly listing
     expenseList.data.forEach((expense) => {
-      listExpense(expense);
+      if (
+        new Date().getFullYear() == new Date(expense.createdAt).getFullYear()
+      ) {
+        let month = new Date(expense.createdAt).toLocaleDateString("default", {
+          month: "long",
+        });
+        let yearlyMonthTotalExpense = document.getElementById(month);
+        if (!yearlyMonthTotalExpense) {
+          yearlyExpenseTable.innerHTML += yearlyListing(month, expense);
+        }
+        yearlyMonthTotalExpense = document.getElementById(month);
+        yearlyMonthTotalExp += parseInt(expense.amount);
+        yearlyMonthTotalExpense.innerHTML = yearlyMonthTotalExp;
+        // yearlyTotalExp += parseInt(expense.amount);
+        // monthlyTotalExpenseVal.innerHTML = yearlyTotalExp;
+      }
     });
   } catch (error) {
     console.log("Error:", error);
   }
 }
 
-async function deleteExpense(id) {
-  const deletedExpense = await axios.delete(
-    `http://localhost:3000/deleteExpense/${id}`,
-    {
-      headers: {
-        authorization: localStorage.getItem("Authorization"),
-      },
-    }
-  );
-  if (deletedExpense) {
-    const expenseToDelete = document.getElementById(id);
-    expenseToDelete.remove();
-  }
-}
-let dailyTotalExp = 0;
-let monthlyTotalExp = 0;
-let yearlyTotalExp = 0;
-let yearlyMonthTotalExp = 0;
-function listExpense(expense) {
-  // console.log("date", new Date().getFullYear());
-  // console.log("expense date", new Date(expense.createdAt).getFullYear());
-  if (
-    new Date().toLocaleDateString() ==
-    new Date(expense.createdAt).toLocaleDateString()
-  ) {
-    dailyExpenseTable.innerHTML += datewiseListing(
-      // dailyTotalExpenseVal,
-      expense
-    );
-    dailyTotalExp += parseInt(expense.amount);
-  }
-  dailyTotalExpenseVal.innerHTML = dailyTotalExp;
-  if (new Date().getMonth() == new Date(expense.createdAt).getMonth()) {
-    monthlyExpenseTable.innerHTML += datewiseListing(
-      // monthlyTotalExpenseVal,
-      expense
-    );
-    monthlyTotalExp += parseInt(expense.amount);
-  }
-  monthlyTotalExpenseVal.innerHTML = monthlyTotalExp;
-  // will have to make map-----------------------------
-
-  if (new Date().getFullYear() == new Date(expense.createdAt).getFullYear()) {
-    let month = new Date(expense.createdAt).toLocaleDateString("default", {
-      month: "long",
-    });
-    let yearlyMonthTotalExpense = document.getElementById(month);
-    if (!yearlyMonthTotalExpense) {
-      yearlyExpenseTable.innerHTML += yearlyListing(month, expense);
-    }
-    yearlyMonthTotalExpense = document.getElementById(month);
-    yearlyMonthTotalExp += parseInt(expense.amount);
-    yearlyMonthTotalExpense.innerHTML = yearlyMonthTotalExp;
-    yearlyTotalExp += parseInt(expense.amount);
-    monthlyTotalExpenseVal.innerHTML = yearlyTotalExp;
-  }
-}
 //daily and monthly table listing
-function datewiseListing(expense) {
-  let date = new Date(expense.createdAt).toLocaleDateString().split("/");
-  date = date[1] + "-" + date[0] + "-" + date[2];
+function datewiseListing(
+  expenseList,
+  tableName,
+  totalExpVal,
+  totalExpValElement,
+  curPage,
+  pageSize
+) {
+  let result = "";
+  expenseList
+    .filter((row, index) => {
+      let start = (curPage - 1) * pageSize;
+      let end = curPage * pageSize;
+      if (index >= start && index < end) return true;
+    })
+    .forEach((expense) => {
+      let date = new Date(expense.createdAt).toLocaleDateString().split("/");
+      date = date[1] + "-" + date[0] + "-" + date[2];
 
-  return `<tr id="${expense.id}">
+      result += `<tr id="${expense.id}">
   <td>${date}</td>
   <td>${expense.description}</td>
   <td>${expense.category}</td>
@@ -179,6 +219,10 @@ function datewiseListing(expense) {
         Delete
       </button>
     </td></tr>`;
+      totalExpVal += parseInt(expense.amount);
+      totalExpValElement.innerHTML = totalExpVal;
+    });
+  tableName.innerHTML = result;
 }
 
 //yearly table listing
@@ -269,6 +313,24 @@ function parseJwt(token) {
 function editExpense(id) {
   console.log("edit clicked with id:", id);
   callHello();
+}
+
+async function deleteExpense(id) {
+  const deletedExpense = await axios.delete(
+    `http://localhost:3000/deleteExpense/${id}`,
+    {
+      headers: {
+        authorization: localStorage.getItem("Authorization"),
+      },
+    }
+  );
+  if (deletedExpense) {
+    const expenseToDelete = document.getElementById(id);
+    expenseToDelete.remove();
+    setTimeout(() => {
+      listAllExpenses();
+    }, 1000);
+  }
 }
 
 async function downloadReport() {
