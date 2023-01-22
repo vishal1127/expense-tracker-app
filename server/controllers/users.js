@@ -1,14 +1,14 @@
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const ForgotPasswordRequest = require("../models/forgot-password-requests");
+const UserServices = require("../services/userServices");
+const ResetPasswordServices = require("../services/resetPasswordServices");
 const SECRET_KEY = "expense-app-secret-key";
 
 exports.createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({
+    const existingUser = await UserServices.findUser({
       where: {
         email: email,
       },
@@ -21,7 +21,7 @@ exports.createUser = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await User.create({
+    const result = await UserServices.createUser({
       name: name,
       email: email,
       password: hashedPassword,
@@ -37,7 +37,9 @@ exports.createUser = async (req, res, next) => {
 exports.signinUser = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const existingUser = await User.findOne({ where: { email: email } });
+    const existingUser = await UserServices.findUser({
+      where: { email: email },
+    });
     if (existingUser.length == 0) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -62,7 +64,7 @@ exports.signinUser = async (req, res, next) => {
 exports.sendResetLink = async (req, res, next) => {
   try {
     const recipientEmail = req.body.email;
-    const user = await User.findOne({
+    const user = await UserServices.findUser({
       where: {
         email: req.body.email,
       },
@@ -100,7 +102,7 @@ exports.sendResetLink = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     const resetId = req.params.resetId;
-    const forgotPass = await ForgotPasswordRequest.findOne({
+    const forgotPass = await ResetPasswordServices.findRequest({
       where: {
         id: resetId,
       },
@@ -167,13 +169,13 @@ exports.updatePassword = async (req, res, next) => {
   try {
     const resetId = req.params.resetId;
     const newPassword = req.body.password;
-    const forgotPass = await ForgotPasswordRequest.findOne({
+    const forgotPass = await ResetPasswordServices.findRequest({
       where: {
         id: resetId,
       },
     });
     const userId = forgotPass.userId;
-    const user = await User.findOne({
+    const user = await UserServices.findUser({
       where: {
         id: userId,
       },

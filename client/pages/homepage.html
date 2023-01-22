@@ -19,7 +19,7 @@
     <header class="p-3 border-bottom bg-dark">
       <div class=" container d-flex">
         <div class="p-2 flex-grow-1" style="color: aliceblue;"><a
-          href="#"
+          href="/client/pages/homepage.html"
           class="d-flex align-items-center mb-2 mb-lg-0 text-light text-decoration-none"
         >
           <img
@@ -58,6 +58,9 @@
             <li>
               <a id="leaderboard-btn" href="./leaderboard.html" style="cursor: pointer; display: none" class="dropdown-item">See Leaderboard</a>
             </li>
+            <li>
+              <a id="downloads-btn" href="./downloadsList.html" style="cursor: pointer; display: none" class="dropdown-item">Downloads List</a>
+            </li>
             <li><hr class="dropdown-divider" /></li>
             <li>
               <a id="signout-btn" style="cursor: pointer;" class="dropdown-item">Sign out</a>
@@ -73,21 +76,20 @@
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
-              <th scope="col" class="column-size">#</th>
               <th scope="col">Date</th>
               <th scope="col">Description</th>
               <th scope="col">Category</th>
-              <th scope="col">Income</th>
+              <!-- <th scope="col">Income</th> -->
               <th scope="col">Expense</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
-          <tbody id="expense-list-table" class="table-group-divider">
+          <tbody id="daily-expense-list-table" class="table-group-divider">
           </tbody>
           <tfoot>
-            <td colspan="4"></td>
-            <td>Savings =</td>
-            <td colspan="2">123</td>
+            <td colspan="2"></td>
+            <td class="total-expenditure-td">Total expenditure =</td>
+            <td id="daily-total-expenditure" colspan="2">0</td>
           </tfoot>
         
         </table>
@@ -96,21 +98,20 @@
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
-              <th scope="col" class="column-size">#</th>
               <th scope="col">Date</th>
               <th scope="col">Description</th>
               <th scope="col">Category</th>
-              <th scope="col">Income</th>
+              <!-- <th scope="col">Income</th> -->
               <th scope="col">Expense</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
-          <tbody id="expense-list-table" class="table-group-divider">
+          <tbody id="monthly-expense-list-table" class="table-group-divider">
           </tbody>
           <tfoot>
-            <td colspan="4"></td>
-            <td>Savings =</td>
-            <td colspan="2">123</td>
+            <td colspan="2"></td>
+            <td class="total-expenditure-td">Total expenditure =</td>
+            <td id="monthly-total-expenditure" colspan="2">0</td>
           </tfoot>
         
         </table>
@@ -119,15 +120,14 @@
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
-              <th scope="col" class="column-size">#</th>
               <th scope="col">Month</th>
-              <th scope="col">Income</th>
-              <th scope="col">Expense</th>
-              <th scope="col">Savings</th>
-              <th scope="col">Actions</th>
+              <!-- <th scope="col">Income</th> -->
+              <th id="month-total-expense" scope="col">Expense</th>
+              <!-- <th scope="col">Total expenditure</th> -->
+              <!-- <th scope="col">Actions</th> -->
             </tr>
           </thead>
-          <tbody id="expense-list-table" class="table-group-divider">
+          <tbody id="yearly-expense-list-table" class="table-group-divider">
           </tbody>
         </table>
         <div class="d-flex justify-content-end">
@@ -146,6 +146,7 @@
         <!-- download report button -->
         <div class="download-btn-div">
           <button
+            id="download-report"
             type="button"
             class="btn add-btn btn-primary"
           >
@@ -228,6 +229,7 @@
     <script>
       feather.replace();
     </script>
+    <script type="module" src="../bootstrap.js"></script>
     <script src="../app.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script

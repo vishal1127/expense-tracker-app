@@ -9,4 +9,11 @@ router.get("/getExpenseList", expenseControllers.getAllExpenses);
 
 router.delete("/deleteExpense/:expenseId", expenseControllers.deleteExpense);
 
+router.get("/expense/downloadAllExpenses", expenseControllers.downloadExpenses);
+
+router.get(
+  "/getExpenseDownloadsList",
+  expenseControllers.getUserFileDownloadsList
+);
+
 module.exports = router;

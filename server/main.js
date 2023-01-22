@@ -9,6 +9,7 @@ const User = require("./models/user");
 const Expense = require("./models/expense");
 const Order = require("./models/order");
 const ForgotPasswordRequest = require("./models/forgot-password-requests");
+const DownloadedExpenseReport = require("./models/downloaded-expense-report");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,6 +33,8 @@ User.hasMany(Order);
 Order.belongsTo(User);
 User.hasMany(ForgotPasswordRequest);
 ForgotPasswordRequest.belongsTo(User);
+User.hasMany(DownloadedExpenseReport);
+DownloadedExpenseReport.belongsTo(User);
 
 sequelize
   .sync()

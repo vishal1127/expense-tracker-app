@@ -91,11 +91,17 @@
     <main class="expense-body p-3">
       <div class="container">
         <!-- leaderboard -->
-        <h2>User Leaderboard</h2>
-        <ul
-          id="leaderboard-list"
-          class="list-group list-group-flush list-group-numbered"
-        ></ul>
+        <h2>Downloads List</h2>
+        <table class="table table-responsive table-dark table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Downloaded on</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="download-list-items"></tbody>
+        </table>
       </div>
     </main>
     <script>

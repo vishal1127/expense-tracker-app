@@ -1,3 +1,4 @@
+// $("#expenseModal").modal("show");
 const expenseModal = document.querySelector("#expenseModal");
 const userName = document.querySelector(".UserName");
 const addExpenseBtn = document.getElementById("add-expense");
@@ -8,14 +9,21 @@ const premiumBtn = document.getElementById("premium-btn");
 const signOutBtn = document.getElementById("signout-btn");
 const premiumStatus = document.getElementById("premium-status");
 const leaderboardBtn = document.getElementById("leaderboard-btn");
+const downloadsBtn = document.getElementById("downloads-btn");
+const dailyTotalExpenseVal = document.getElementById("daily-total-expenditure");
+const monthlyTotalExpenseVal = document.getElementById(
+  "monthly-total-expenditure"
+);
+const downloadReportBtn = document.getElementById("download-report");
 
-let expenseTable;
+let dailyExpenseTable, monthlyExpenseTable, yearlyExpenseTable;
 let expenseList;
 
 window.addEventListener("DOMContentLoaded", listAllExpenses);
 addExpenseBtn.addEventListener("click", addExpense);
 premiumBtn.addEventListener("click", buyPremium);
 signOutBtn.addEventListener("click", signOut);
+downloadReportBtn.addEventListener("click", downloadReport);
 
 const userDetails = JSON.parse(localStorage.getItem("User Details"));
 
@@ -57,17 +65,34 @@ async function addExpense(e) {
 }
 
 async function listAllExpenses() {
-  updateLinks();
-  expenseList = await axios.get("http://localhost:3000/getExpenseList", {
-    headers: {
-      authorization: localStorage.getItem("Authorization"),
-    },
-  });
-  expenseTable = document.getElementById("expense-list-table");
-  expenseTable.innerHTML = "";
-  expenseList.data.forEach((expense, id) => {
-    listExpense(expense, id);
-  });
+  try {
+    const downloadsList = await axios.get(
+      "http://localhost:3000/getExpenseDownloadsList",
+      {
+        headers: {
+          authorization: localStorage.getItem("Authorization"),
+        },
+      }
+    );
+    console.log("downloads List", downloadsList);
+    updateLinks();
+    expenseList = await axios.get("http://localhost:3000/getExpenseList", {
+      headers: {
+        authorization: localStorage.getItem("Authorization"),
+      },
+    });
+    dailyExpenseTable = document.getElementById("daily-expense-list-table");
+    dailyExpenseTable.innerHTML = "";
+    monthlyExpenseTable = document.getElementById("monthly-expense-list-table");
+    monthlyExpenseTable.innerHTML = "";
+    yearlyExpenseTable = document.getElementById("yearly-expense-list-table");
+    yearlyExpenseTable.innerHTML = "";
+    expenseList.data.forEach((expense) => {
+      listExpense(expense);
+    });
+  } catch (error) {
+    console.log("Error:", error);
+  }
 }
 
 async function deleteExpense(id) {
@@ -84,17 +109,58 @@ async function deleteExpense(id) {
     expenseToDelete.remove();
   }
 }
+let dailyTotalExp = 0;
+let monthlyTotalExp = 0;
+let yearlyTotalExp = 0;
+let yearlyMonthTotalExp = 0;
+function listExpense(expense) {
+  // console.log("date", new Date().getFullYear());
+  // console.log("expense date", new Date(expense.createdAt).getFullYear());
+  if (
+    new Date().toLocaleDateString() ==
+    new Date(expense.createdAt).toLocaleDateString()
+  ) {
+    dailyExpenseTable.innerHTML += datewiseListing(
+      // dailyTotalExpenseVal,
+      expense
+    );
+    dailyTotalExp += parseInt(expense.amount);
+  }
+  dailyTotalExpenseVal.innerHTML = dailyTotalExp;
+  if (new Date().getMonth() == new Date(expense.createdAt).getMonth()) {
+    monthlyExpenseTable.innerHTML += datewiseListing(
+      // monthlyTotalExpenseVal,
+      expense
+    );
+    monthlyTotalExp += parseInt(expense.amount);
+  }
+  monthlyTotalExpenseVal.innerHTML = monthlyTotalExp;
+  // will have to make map-----------------------------
 
-function listExpense(expense, id) {
+  if (new Date().getFullYear() == new Date(expense.createdAt).getFullYear()) {
+    let month = new Date(expense.createdAt).toLocaleDateString("default", {
+      month: "long",
+    });
+    let yearlyMonthTotalExpense = document.getElementById(month);
+    if (!yearlyMonthTotalExpense) {
+      yearlyExpenseTable.innerHTML += yearlyListing(month, expense);
+    }
+    yearlyMonthTotalExpense = document.getElementById(month);
+    yearlyMonthTotalExp += parseInt(expense.amount);
+    yearlyMonthTotalExpense.innerHTML = yearlyMonthTotalExp;
+    yearlyTotalExp += parseInt(expense.amount);
+    monthlyTotalExpenseVal.innerHTML = yearlyTotalExp;
+  }
+}
+//daily and monthly table listing
+function datewiseListing(expense) {
   let date = new Date(expense.createdAt).toLocaleDateString().split("/");
   date = date[1] + "-" + date[0] + "-" + date[2];
-  console.log("expense", expense);
-  expenseTable.innerHTML += `<tr id="${expense.id}">
-  <td>${id + 1}</td>
+
+  return `<tr id="${expense.id}">
   <td>${date}</td>
   <td>${expense.description}</td>
   <td>${expense.category}</td>
-  <td>${expense.amount}</td>
   <td>${expense.amount}</td>
     <td>
       <button 
@@ -113,6 +179,14 @@ function listExpense(expense, id) {
         Delete
       </button>
     </td></tr>`;
+}
+
+//yearly table listing
+function yearlyListing(month, expense) {
+  return `<tr>
+  <td>${month}</td>
+  <td id="${month}">${expense.amount}</td>
+  </tr>`;
 }
 
 async function buyPremium(e) {
@@ -173,6 +247,7 @@ function updateLinks() {
   premiumBtn.style.display = membership ? "none" : "block";
   premiumStatus.style.display = membership ? "block" : "none";
   leaderboardBtn.style.display = membership ? "block" : "none";
+  downloadsBtn.style.display = membership ? "block" : "none";
 }
 
 function parseJwt(token) {
@@ -189,4 +264,31 @@ function parseJwt(token) {
   );
 
   return JSON.parse(jsonPayload);
+}
+
+function editExpense(id) {
+  console.log("edit clicked with id:", id);
+  callHello();
+}
+
+async function downloadReport() {
+  try {
+    const response = await axios.get(
+      "http://localhost:3000/expense/downloadAllExpenses",
+      {
+        headers: {
+          authorization: localStorage.getItem("Authorization"),
+        },
+      }
+    );
+    if (response) {
+      console.log("report downloaded", response.data);
+      let a = document.createElement("a");
+      a.href = response.data.fileUrl;
+      a.download = "myexpense.csv";
+      a.click();
+    }
+  } catch (error) {
+    console.log("Error downloading report:", error);
+  }
 }

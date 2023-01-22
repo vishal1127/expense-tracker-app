@@ -1,11 +1,11 @@
 const { Sequelize } = require("sequelize");
 const Expense = require("../models/expense");
-const User = require("../models/user");
 const sequelize = require("../utils/database");
+const UserServices = require("../services/userServices");
 
 exports.getLeaderboard = async (req, res, next) => {
   try {
-    const leaderboardList = await User.findAll({
+    const leaderboardList = await UserServices.findAllUsers({
       attributes: [
         "id",
         "name",
