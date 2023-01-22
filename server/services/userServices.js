@@ -26,3 +26,7 @@ exports.addFileUrl = (req, data) => {
 exports.getUserDownloadsList = (req) => {
   return req.user.getDownloadedExpenseReports();
 };
+
+exports.getSingleExpense = (req, options) => {
+  return req.user.getExpenses(options);
+};

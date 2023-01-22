@@ -72,7 +72,26 @@
     <main class="expense-body p-3">
       <div class="container">
         <!-- daily expense table -->
-        <h4 class="table-title">Daily</h4>
+        <div class="d-flex">
+          <div class="p-2 flex-grow-1"><h4 class="table-title">Daily</h4></div>
+          
+        <select id="daily-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+        <nav aria-label="Daily table navigation">
+          <ul class="pagination justify-content-center">
+            <li class="page-item daily-previous">
+              <a class="page-link" href="#daily-page-size"><i data-feather="chevron-left"></i></a>
+            </li>
+            <li class="page-item daily-next">
+              <a class="page-link" href="#daily-page-size"><i data-feather="chevron-right"></i></a>
+            </li>
+          </ul>
+        </nav>
+        </div>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
@@ -93,19 +112,28 @@
           </tfoot>
         
         </table>
-        <nav aria-label="Daily table navigation">
+        <hr>
+        <!-- monthly expense table -->
+        <div class="d-flex">
+          <div class="p-2 flex-grow-1"><h4 class="table-title">Monthly</h4></div>
+          
+        <select id="monthly-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+        <nav aria-label="Monthly table navigation">
           <ul class="pagination justify-content-center">
-            <li class="page-item daily-previous">
-              <a class="page-link" href="#daily-expense-list-table">Previous</a>
+            <li class="page-item monthly-previous">
+              <a class="page-link" href="#monthly-page-size"><i data-feather="chevron-left"></i></a>
             </li>
-            <li class="page-item daily-next">
-              <a class="page-link" href="#daily-expense-list-table">Next</a>
+            <li class="page-item monthly-next">
+              <a class="page-link" href="#monthly-page-size"><i data-feather="chevron-right"></i></a>
             </li>
           </ul>
         </nav>
-        <hr>
-        <!-- monthly expense table -->
-        <h4 class="table-title">Monthly</h4>
+        </div>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
@@ -125,16 +153,6 @@
             <td id="monthly-total-expenditure" colspan="2">0</td>
           </tfoot>
         </table>
-        <nav aria-label="Monthly table navigation">
-          <ul class="pagination justify-content-center">
-            <li class="page-item monthly-previous">
-              <a class="page-link" href="#monthly-expense-list-table">Previous</a>
-            </li>
-            <li class="page-item monthly-next">
-              <a class="page-link" href="#monthly-expense-list-table">Next</a>
-            </li>
-          </ul>
-        </nav>
         <hr>
         <!-- yearly expense table -->
         <h4 class="table-title">Yearly</h4>

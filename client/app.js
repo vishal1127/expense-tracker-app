@@ -14,18 +14,24 @@ const dailyTotalExpenseVal = document.getElementById("daily-total-expenditure");
 const monthlyTotalExpenseVal = document.getElementById(
   "monthly-total-expenditure"
 );
+const dailyPageSizeSelect = document.getElementById("daily-page-size");
+dailyPageSizeSelect.addEventListener("change", pageSizeChange);
+const monthlyPageSizeSelect = document.getElementById("monthly-page-size");
+monthlyPageSizeSelect.addEventListener("change", pageSizeChange);
 const downloadReportBtn = document.getElementById("download-report");
 
 let dailyExpenseTable, monthlyExpenseTable, yearlyExpenseTable;
 let expenseList, dailyExpenseList, monthlyExpenseList;
 
 window.addEventListener("DOMContentLoaded", listAllExpenses);
+window.addEventListener("DOMContentLoaded", getPageSizes);
 addExpenseBtn.addEventListener("click", addExpense);
 premiumBtn.addEventListener("click", buyPremium);
 signOutBtn.addEventListener("click", signOut);
 downloadReportBtn.addEventListener("click", downloadReport);
 
 const userDetails = JSON.parse(localStorage.getItem("User Details"));
+let editId = 0;
 
 userName.innerHTML = `<p style="margin:0px">${userDetails.name}</p>`;
 
@@ -41,23 +47,35 @@ async function addExpense(e) {
       description: descriptionField.value,
     };
     try {
-      const result = await axios.post(
-        "http://localhost:3000/addExpense",
-        expenseData,
-        {
-          headers: {
-            authorization: localStorage.getItem("Authorization"),
-          },
-        }
-      );
-      if (result) {
-        console.log("result ", result);
-        listAllExpenses();
-        amountField.value = "";
-        categoryField.value = "Groceries";
-        descriptionField.value = "";
-        //   expenseModal.hide();
+      if (!editId) {
+        const result = await axios.post(
+          "http://localhost:3000/addExpense",
+          expenseData,
+          {
+            headers: {
+              authorization: localStorage.getItem("Authorization"),
+            },
+          }
+        );
+      } else {
+        const response = await axios.post(
+          `http://localhost:3000/updateExpense/${editId}`,
+          expenseData,
+          {
+            headers: {
+              authorization: localStorage.getItem("Authorization"),
+            },
+          }
+        );
+        editId = 0;
       }
+      setTimeout(() => {
+        listAllExpenses();
+      }, 1000);
+      amountField.value = "";
+      categoryField.value = "Groceries";
+      descriptionField.value = "";
+      hideModal();
     } catch (error) {
       console.log("Error:", error);
     }
@@ -310,9 +328,20 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 }
 
-function editExpense(id) {
+async function editExpense(id) {
   console.log("edit clicked with id:", id);
-  callHello();
+  editId = id;
+  const response = await axios.get(`http://localhost:3000/getExpense/${id}`, {
+    headers: {
+      authorization: localStorage.getItem("Authorization"),
+    },
+  });
+  const expenseData = response.data.expenseData[0];
+  amountField.value = expenseData.amount;
+  categoryField.value = expenseData.category;
+  descriptionField.value = expenseData.description;
+  console.log("expense data for edit", expenseData);
+  openModal();
 }
 
 async function deleteExpense(id) {
@@ -353,4 +382,28 @@ async function downloadReport() {
   } catch (error) {
     console.log("Error downloading report:", error);
   }
+}
+
+function pageSizeChange() {
+  const pageSizes = {
+    dailyPageSize: dailyPageSizeSelect.value,
+    monthlyPageSize: monthlyPageSizeSelect.value,
+  };
+  localStorage.setItem("Page size", JSON.stringify(pageSizes));
+  updatePageSizes(dailyPageSizeSelect.value, monthlyPageSizeSelect.value);
+}
+
+function getPageSizes() {
+  const allPageSizes = JSON.parse(localStorage.getItem("Page size"));
+  if (allPageSizes) {
+    dailyPageSizeSelect.value = allPageSizes.dailyPageSize;
+    monthlyPageSizeSelect.value = allPageSizes.monthlyPageSize;
+    updatePageSizes(allPageSizes.dailyPageSize, allPageSizes.monthlyPageSize);
+  }
+}
+
+function updatePageSizes(dailyPageSizeVal, monthlyPageSizeVal) {
+  dailyPageSize = dailyPageSizeVal;
+  monthlyPageSize = monthlyPageSizeVal;
+  listAllExpenses();
 }

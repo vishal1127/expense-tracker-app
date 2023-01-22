@@ -82,3 +82,40 @@ exports.getUserFileDownloadsList = async (req, res, next) => {
     res.status(500).json({ message: "Something went wrong", success: false });
   }
 };
+
+exports.getExpense = async (req, res, next) => {
+  try {
+    const expenseId = req.params.expenseId;
+    const expenseData = await UserServices.getSingleExpense(req, {
+      where: {
+        id: expenseId,
+      },
+    });
+    res.status(200).json({ expenseData: expenseData, success: true });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: "Something went wrong", success: false });
+  }
+};
+
+exports.updateExpense = async (req, res, next) => {
+  try {
+    const { amount, category, description } = req.body;
+    const expenseId = req.params.expenseId;
+    const expenseData = await UserServices.getSingleExpense(req, {
+      where: {
+        id: expenseId,
+      },
+    });
+    expenseData[0].amount = amount;
+    expenseData[0].category = category;
+    expenseData[0].description = description;
+    expenseData[0].save();
+    res
+      .status(200)
+      .json({ message: "Expense updated successfuly", success: true });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: "Something went wrong", success: false });
+  }
+};

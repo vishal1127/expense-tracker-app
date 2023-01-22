@@ -16,4 +16,8 @@ router.get(
   expenseControllers.getUserFileDownloadsList
 );
 
+router.get("/getExpense/:expenseId", expenseControllers.getExpense);
+
+router.post("/updateExpense/:expenseId", expenseControllers.updateExpense);
+
 module.exports = router;
