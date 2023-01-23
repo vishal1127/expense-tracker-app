@@ -18,13 +18,29 @@ const dailyPageSizeSelect = document.getElementById("daily-page-size");
 dailyPageSizeSelect.addEventListener("change", pageSizeChange);
 const monthlyPageSizeSelect = document.getElementById("monthly-page-size");
 monthlyPageSizeSelect.addEventListener("change", pageSizeChange);
+const dailyPrevPageBtn = document.querySelector(".daily-previous");
+const dailyNextPageBtn = document.querySelector(".daily-next");
+const dailyPrevPageNoBtn = document.querySelector(".daily-prev-page");
+const dailyCurrPageNoBtn = document.querySelector(".daily-curr-page");
+const dailyNextPageNoBtn = document.querySelector(".daily-next-page");
+const dailyLastPageNoBtn = document.querySelector(".daily-last-page");
+const monthlyPrevPageBtn = document.querySelector(".monthly-previous");
+const monthlyNextPageBtn = document.querySelector(".monthly-next");
+const monthlyPrevPageNoBtn = document.querySelector(".monthly-prev-page");
+const monthlyCurrPageNoBtn = document.querySelector(".monthly-curr-page");
+const monthlyNextPageNoBtn = document.querySelector(".monthly-next-page");
+const monthlyLastPageNoBtn = document.querySelector(".monthly-last-page");
+const dailyTableTitle = document.getElementById("daily-title");
+const monthlyTableTitle = document.getElementById("monthly-title");
 const downloadReportBtn = document.getElementById("download-report");
 
 let dailyExpenseTable, monthlyExpenseTable, yearlyExpenseTable;
 let expenseList, dailyExpenseList, monthlyExpenseList;
+let dailyPageNumber = 1;
+let monthlyPageNumber = 1;
 
 window.addEventListener("DOMContentLoaded", listAllExpenses);
-window.addEventListener("DOMContentLoaded", getPageSizes);
+window.addEventListener("DOMContentLoaded", getPagination);
 addExpenseBtn.addEventListener("click", addExpense);
 premiumBtn.addEventListener("click", buyPremium);
 signOutBtn.addEventListener("click", signOut);
@@ -81,115 +97,171 @@ async function addExpense(e) {
     }
   }
 }
-// daily table pagination
-let dailyPageSize = 4;
-let dailyCurPage = 1;
-document
-  .querySelector(".daily-next")
-  .addEventListener("click", dailyNextPage, false);
-document
-  .querySelector(".daily-previous")
-  .addEventListener("click", dailyPreviousPage, false);
 
-function dailyPreviousPage() {
-  if (dailyCurPage > 1) dailyCurPage--;
-  listAllExpenses();
-}
-
-function dailyNextPage() {
-  if (dailyCurPage * dailyPageSize < dailyExpenseList.length) dailyCurPage++;
-  listAllExpenses();
-}
-
-// monthly table pagination
-let monthlyPageSize = 4;
-let monthlyCurPage = 1;
-document
-  .querySelector(".monthly-next")
-  .addEventListener("click", monthlyNextPage, false);
-document
-  .querySelector(".monthly-previous")
-  .addEventListener("click", monthlyPreviousPage, false);
-
-function monthlyPreviousPage() {
-  if (monthlyCurPage > 1) monthlyCurPage--;
-  listAllExpenses();
-}
-
-function monthlyNextPage() {
-  if (monthlyCurPage * monthlyPageSize < monthlyExpenseList.length)
-    monthlyCurPage++;
-  listAllExpenses();
-}
-
-async function listAllExpenses() {
+//daily table data listing
+async function dailyDateList(startDate, endDate) {
   let dailyTotalExp = 0;
-  let monthlyTotalExp = 0;
-  let yearlyMonthTotalExp = 0;
+  dailyExpenseTable = document.getElementById("daily-expense-list-table");
+  dailyExpenseTable.innerHTML = "";
   try {
-    updateLinks();
-    expenseList = await axios.get("http://localhost:3000/getExpenseList", {
+    const response = await axios.get(
+      `http://localhost:3000/getExpenseList/${startDate}/${endDate}`,
+      {
+        params: {
+          pageSize: dailyPageSizeSelect.value,
+          page: dailyPageNumber,
+        },
+        headers: {
+          authorization: localStorage.getItem("Authorization"),
+        },
+      }
+    );
+    const dailyData = response.data.expenseList;
+    datewiseListing(
+      dailyData,
+      dailyExpenseTable,
+      dailyTotalExp,
+      dailyTotalExpenseVal
+    );
+    if (response.data.hasPrevPage) {
+      dailyPrevPageBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.prevPage})" class="page-link" href="#daily-title" aria-label="Previous">
+    <span aria-hidden="true">&laquo;</span>
+  </a>`;
+    } else {
+      dailyPrevPageBtn.innerHTML = `<a class="page-link disabled" href="#" aria-label="Previous">
+      <span aria-hidden="true">&laquo;</span>
+    </a>`;
+    }
+    if (response.data.hasPrevPage) {
+      dailyPrevPageNoBtn.style.display = "block";
+      dailyPrevPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.prevPage})" class="page-link" href="#daily-title">${response.data.prevPage}</a>`;
+    } else {
+      dailyPrevPageNoBtn.style.display = "none";
+    }
+    dailyCurrPageNoBtn.innerHTML = `<a class="page-link active" href="#">${response.data.currentPage}</a>`;
+    if (
+      response.data.nextPage != response.data.lastPage &&
+      response.data.hasNextPage
+    ) {
+      dailyNextPageNoBtn.style.display = "block";
+      dailyNextPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.nextPage})" class="page-link" href="#daily-title">${response.data.nextPage}</a>`;
+    } else {
+      dailyNextPageNoBtn.style.display = "none";
+    }
+    if (response.data.lastPage != dailyPageNumber) {
+      dailyLastPageNoBtn.style.display = "block";
+      dailyLastPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.lastPage})" class="page-link" href="#daily-title">${response.data.lastPage}</a>`;
+    } else {
+      dailyLastPageNoBtn.style.display = "none";
+    }
+    if (response.data.hasNextPage) {
+      dailyNextPageBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.nextPage})" class="page-link" href="#daily-title" aria-label="Next">
+      <span aria-hidden="true">&raquo;</span>
+    </a>`;
+    } else {
+      dailyNextPageBtn.innerHTML = `<a class="page-link disabled" href="#" aria-label="Next">
+      <span aria-hidden="true">&raquo;</span>
+    </a>`;
+    }
+  } catch (error) {
+    console.log("Error:", error);
+  }
+}
+
+//monthly table data listing
+async function monthlyDateList(startDate, endDate) {
+  let monthlyTotalExp = 0;
+  monthlyExpenseTable = document.getElementById("monthly-expense-list-table");
+  monthlyExpenseTable.innerHTML = "";
+  const response = await axios.get(
+    `http://localhost:3000/getExpenseList/${startDate}/${endDate}`,
+    {
+      params: {
+        pageSize: monthlyPageSizeSelect.value,
+        page: monthlyPageNumber,
+      },
       headers: {
         authorization: localStorage.getItem("Authorization"),
       },
-    });
-    dailyExpenseTable = document.getElementById("daily-expense-list-table");
-    dailyExpenseTable.innerHTML = "";
-    monthlyExpenseTable = document.getElementById("monthly-expense-list-table");
-    monthlyExpenseTable.innerHTML = "";
-    yearlyExpenseTable = document.getElementById("yearly-expense-list-table");
-    yearlyExpenseTable.innerHTML = "";
-    //daily listing
-    dailyExpenseList = expenseList.data.filter((expense) => {
-      if (
-        new Date().toLocaleDateString() ==
-        new Date(expense.createdAt).toLocaleDateString()
-      )
-        return expense;
-    });
-    datewiseListing(
-      dailyExpenseList,
-      dailyExpenseTable,
-      dailyTotalExp,
-      dailyTotalExpenseVal,
-      dailyCurPage,
-      dailyPageSize
-    );
-    //monthly listing
-    monthlyExpenseList = expenseList.data.filter((expense) => {
-      if (new Date().getMonth() == new Date(expense.createdAt).getMonth()) {
-        return expense;
-      }
-    });
-    datewiseListing(
-      monthlyExpenseList,
-      monthlyExpenseTable,
-      monthlyTotalExp,
-      monthlyTotalExpenseVal,
-      monthlyCurPage,
-      monthlyPageSize
-    );
-    // dailyExpenseTable.innerHTML = result;
+    }
+  );
+  const monthlyData = response.data.expenseList;
+  datewiseListing(
+    monthlyData,
+    monthlyExpenseTable,
+    monthlyTotalExp,
+    monthlyTotalExpenseVal
+  );
+  if (response.data.hasPrevPage) {
+    monthlyPrevPageBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.prevPage})" class="page-link" href="#monthly-title" aria-label="Previous">
+  <span aria-hidden="true">&laquo;</span>
+</a>`;
+  } else {
+    monthlyPrevPageBtn.innerHTML = `<a class="page-link disabled" href="#" aria-label="Previous">
+    <span aria-hidden="true">&laquo;</span>
+  </a>`;
+  }
+  if (response.data.hasPrevPage) {
+    monthlyPrevPageNoBtn.style.display = "block";
+    monthlyPrevPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.prevPage})" class="page-link" href="#monthly-title">${response.data.prevPage}</a>`;
+  } else {
+    monthlyPrevPageNoBtn.style.display = "none";
+  }
+  monthlyCurrPageNoBtn.innerHTML = `<a class="page-link active" href="#">${response.data.currentPage}</a>`;
+  if (
+    response.data.nextPage != response.data.lastPage &&
+    response.data.hasNextPage
+  ) {
+    monthlyNextPageNoBtn.style.display = "block";
+    monthlyNextPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.nextPage})" class="page-link" href="#monthly-title">${response.data.nextPage}</a>`;
+  } else {
+    monthlyNextPageNoBtn.style.display = "none";
+  }
+  if (response.data.lastPage != monthlyPageNumber) {
+    monthlyLastPageNoBtn.style.display = "block";
+    monthlyLastPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.lastPage})" class="page-link" href="#monthly-title">${response.data.lastPage}</a>`;
+  } else {
+    monthlyLastPageNoBtn.style.display = "none";
+  }
+  if (response.data.hasNextPage) {
+    monthlyNextPageBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.nextPage})" class="page-link" href="#monthly-title" aria-label="Next">
+    <span aria-hidden="true">&raquo;</span>
+  </a>`;
+  } else {
+    monthlyNextPageBtn.innerHTML = `<a class="page-link disabled" href="#" aria-label="Next">
+    <span aria-hidden="true">&raquo;</span>
+  </a>`;
+  }
+}
 
-    //yearly listing
-    expenseList.data.forEach((expense) => {
-      if (
-        new Date().getFullYear() == new Date(expense.createdAt).getFullYear()
-      ) {
-        let month = new Date(expense.createdAt).toLocaleDateString("default", {
-          month: "long",
-        });
-        let yearlyMonthTotalExpense = document.getElementById(month);
-        if (!yearlyMonthTotalExpense) {
-          yearlyExpenseTable.innerHTML += yearlyListing(month, expense);
-        }
-        yearlyMonthTotalExpense = document.getElementById(month);
-        yearlyMonthTotalExp += parseInt(expense.amount);
-        yearlyMonthTotalExpense.innerHTML = yearlyMonthTotalExp;
-        // yearlyTotalExp += parseInt(expense.amount);
-        // monthlyTotalExpenseVal.innerHTML = yearlyTotalExp;
-      }
-    });
+async function listAllExpenses() {
+  try {
+    //current date,month,year
+    const date = new Date(),
+      m = date.getMonth(),
+      y = date.getFullYear();
+
+    //current day midnight and next day midnight
+    let nextDateM = new Date(new Date().setDate(new Date().getDate() + 1));
+    nextDateM.setHours(0, 0, 0, 0);
+    let currDateM = date;
+    currDateM.setHours(0, 0, 0, 0);
+
+    //first day of current year and next year
+    const currentYear = new Date().getFullYear();
+    const firstDayCY = new Date(currentYear, 0, 1);
+    const firstDayNY = new Date(currentYear + 1, 0, 1);
+
+    //daily data listing function call
+    dailyDateList(currDateM, nextDateM);
+
+    //monthly data listing function call
+    monthlyDateList(new Date(y, m, 1), new Date(y, m + 1, 0));
+
+    //yearly data listing function call
+    yearlyListing(firstDayCY, firstDayNY);
+
+    updateLinks();
   } catch (error) {
     console.log("Error:", error);
   }
@@ -205,17 +277,11 @@ function datewiseListing(
   pageSize
 ) {
   let result = "";
-  expenseList
-    .filter((row, index) => {
-      let start = (curPage - 1) * pageSize;
-      let end = curPage * pageSize;
-      if (index >= start && index < end) return true;
-    })
-    .forEach((expense) => {
-      let date = new Date(expense.createdAt).toLocaleDateString().split("/");
-      date = date[1] + "-" + date[0] + "-" + date[2];
+  expenseList.forEach((expense) => {
+    let date = new Date(expense.createdAt).toLocaleDateString().split("/");
+    date = date[1] + "-" + date[0] + "-" + date[2];
 
-      result += `<tr id="${expense.id}">
+    result += `<tr id="${expense.id}">
   <td>${date}</td>
   <td>${expense.description}</td>
   <td>${expense.category}</td>
@@ -237,18 +303,47 @@ function datewiseListing(
         Delete
       </button>
     </td></tr>`;
-      totalExpVal += parseInt(expense.amount);
-      totalExpValElement.innerHTML = totalExpVal;
-    });
+    totalExpVal += parseInt(expense.amount);
+    totalExpValElement.innerHTML = totalExpVal;
+  });
   tableName.innerHTML = result;
 }
 
 //yearly table listing
-function yearlyListing(month, expense) {
-  return `<tr>
-  <td>${month}</td>
-  <td id="${month}">${expense.amount}</td>
-  </tr>`;
+async function yearlyListing(startDate, endDate) {
+  let yearlyMonthTotalExp = 0;
+  yearlyExpenseTable = document.getElementById("yearly-expense-list-table");
+  yearlyExpenseTable.innerHTML = "";
+  const response = await axios.get(
+    `http://localhost:3000/getExpenseList/${startDate}/${endDate}`,
+    {
+      // params: {
+      //   pageSize: 2,
+      //   page: 1,
+      // },
+      headers: {
+        authorization: localStorage.getItem("Authorization"),
+      },
+    }
+  );
+  const yearlyData = response.data.expenseList;
+  yearlyData.forEach((expense) => {
+    if (new Date().getFullYear() == new Date(expense.createdAt).getFullYear()) {
+      let month = new Date(expense.createdAt).toLocaleDateString("default", {
+        month: "long",
+      });
+      let yearlyMonthTotalExpense = document.getElementById(month);
+      if (!yearlyMonthTotalExpense) {
+        yearlyExpenseTable.innerHTML += `<tr>
+        <td>${month}</td>
+        <td id="${month}">${expense.amount}</td>
+        </tr>`;
+      }
+      yearlyMonthTotalExpense = document.getElementById(month);
+      yearlyMonthTotalExp += parseInt(expense.amount);
+      yearlyMonthTotalExpense.innerHTML = yearlyMonthTotalExp;
+    }
+  });
 }
 
 async function buyPremium(e) {
@@ -329,7 +424,6 @@ function parseJwt(token) {
 }
 
 async function editExpense(id) {
-  console.log("edit clicked with id:", id);
   editId = id;
   const response = await axios.get(`http://localhost:3000/getExpense/${id}`, {
     headers: {
@@ -340,7 +434,6 @@ async function editExpense(id) {
   amountField.value = expenseData.amount;
   categoryField.value = expenseData.category;
   descriptionField.value = expenseData.description;
-  console.log("expense data for edit", expenseData);
   openModal();
 }
 
@@ -373,7 +466,6 @@ async function downloadReport() {
       }
     );
     if (response) {
-      console.log("report downloaded", response.data);
       let a = document.createElement("a");
       a.href = response.data.fileUrl;
       a.download = "myexpense.csv";
@@ -384,16 +476,28 @@ async function downloadReport() {
   }
 }
 
-function pageSizeChange() {
+function goToDailyPage(pageNumber) {
+  dailyPageNumber = pageNumber;
+  listAllExpenses();
+}
+
+function goToMonthlyPage(pageNumber) {
+  monthlyPageNumber = pageNumber;
+  listAllExpenses();
+}
+
+function pageSizeChange(e) {
   const pageSizes = {
     dailyPageSize: dailyPageSizeSelect.value,
     monthlyPageSize: monthlyPageSizeSelect.value,
   };
   localStorage.setItem("Page size", JSON.stringify(pageSizes));
   updatePageSizes(dailyPageSizeSelect.value, monthlyPageSizeSelect.value);
+  if (e.target.id == "daily-page-size") dailyTableTitle.scrollIntoView();
+  else monthlyTableTitle.scrollIntoView();
 }
 
-function getPageSizes() {
+function getPagination() {
   const allPageSizes = JSON.parse(localStorage.getItem("Page size"));
   if (allPageSizes) {
     dailyPageSizeSelect.value = allPageSizes.dailyPageSize;

@@ -5,7 +5,10 @@ const expenseControllers = require("../controllers/expenses");
 
 router.post("/addExpense", expenseControllers.addExpense);
 
-router.get("/getExpenseList", expenseControllers.getAllExpenses);
+router.get(
+  "/getExpenseList/:startDate/:endDate",
+  expenseControllers.getAllExpenses
+);
 
 router.delete("/deleteExpense/:expenseId", expenseControllers.deleteExpense);
 

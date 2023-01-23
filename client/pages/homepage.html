@@ -72,26 +72,7 @@
     <main class="expense-body p-3">
       <div class="container">
         <!-- daily expense table -->
-        <div class="d-flex">
-          <div class="p-2 flex-grow-1"><h4 class="table-title">Daily</h4></div>
-          
-        <select id="daily-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
-          <option value="5" selected>5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-        </select>
-        <nav aria-label="Daily table navigation">
-          <ul class="pagination justify-content-center">
-            <li class="page-item daily-previous">
-              <a class="page-link" href="#daily-page-size"><i data-feather="chevron-left"></i></a>
-            </li>
-            <li class="page-item daily-next">
-              <a class="page-link" href="#daily-page-size"><i data-feather="chevron-right"></i></a>
-            </li>
-          </ul>
-        </nav>
-        </div>
+        <h4 id="daily-title" class="table-title">Daily</h4>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
@@ -112,28 +93,29 @@
           </tfoot>
         
         </table>
-        <hr>
-        <!-- monthly expense table -->
         <div class="d-flex">
-          <div class="p-2 flex-grow-1"><h4 class="table-title">Monthly</h4></div>
+          <div class="p-2 flex-grow-1"></div>
           
-        <select id="monthly-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
+        <select id="daily-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
           <option value="5" selected>5</option>
           <option value="10">10</option>
           <option value="15">15</option>
           <option value="20">20</option>
         </select>
-        <nav aria-label="Monthly table navigation">
+        <nav aria-label="Daily table navigation">
           <ul class="pagination justify-content-center">
-            <li class="page-item monthly-previous">
-              <a class="page-link" href="#monthly-page-size"><i data-feather="chevron-left"></i></a>
-            </li>
-            <li class="page-item monthly-next">
-              <a class="page-link" href="#monthly-page-size"><i data-feather="chevron-right"></i></a>
-            </li>
+            <li class="page-item daily-previous"></li>
+            <li class="page-item daily-prev-page"></li>
+            <li class="page-item daily-curr-page"></li>
+            <li class="page-item daily-next-page"></li>
+            <li class="page-item daily-last-page"></li>
+            <li class="page-item daily-next"></li>
           </ul>
         </nav>
         </div>
+        <hr>
+        <!-- monthly expense table -->
+        <h4 id="monthly-title" class="table-title">Monthly</h4>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
@@ -153,6 +135,26 @@
             <td id="monthly-total-expenditure" colspan="2">0</td>
           </tfoot>
         </table>
+        <div class="d-flex">
+          <div class="p-2 flex-grow-1"></div>
+          
+        <select id="monthly-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+        <nav aria-label="Monthly table navigation">
+          <ul class="pagination justify-content-center">
+            <li class="page-item monthly-previous"></li>
+            <li class="page-item monthly-prev-page"></li>
+            <li class="page-item monthly-curr-page"></li>
+            <li class="page-item monthly-next-page"></li>
+            <li class="page-item monthly-last-page"></li>
+            <li class="page-item monthly-next"></li>
+          </ul>
+        </nav>
+        </div>
         <hr>
         <!-- yearly expense table -->
         <h4 class="table-title">Yearly</h4>

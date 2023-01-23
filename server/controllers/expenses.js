@@ -1,7 +1,7 @@
 const sequelize = require("../utils/database");
 const UserServices = require("../services/userServices");
 const S3Services = require("../services/S3Services");
-
+const { Op } = require("sequelize");
 exports.addExpense = async (req, res, next) => {
   const { amount, category, description } = req.body;
   try {
@@ -23,9 +23,36 @@ exports.addExpense = async (req, res, next) => {
 
 exports.getAllExpenses = async (req, res, next) => {
   try {
-    const allExpenses = await UserServices.getExpenses(req);
-    res.status(201).send(allExpenses);
-    // res.send(201).json({ ExpenseList: allExpenses, success: true });
+    const startDate = req.params.startDate;
+    const endDate = req.params.endDate;
+    const pageSize = parseInt(req.query.pageSize);
+    const page = parseInt(req.query.page) || 1;
+    const allExpenses = await UserServices.getExpenses(req, {
+      where: {
+        createdAt: {
+          [Op.and]: [{ [Op.gte]: startDate }, { [Op.lte]: endDate }],
+        },
+      },
+      offset: (page - 1) * pageSize ? (page - 1) * pageSize : 0,
+      limit: pageSize ? pageSize : 12,
+    });
+    const totalCount = await UserServices.countTotalExpenses(req, {
+      where: {
+        createdAt: {
+          [Op.and]: [{ [Op.gte]: startDate }, { [Op.lte]: endDate }],
+        },
+      },
+    });
+    res.status(201).json({
+      expenseList: allExpenses,
+      currentPage: page,
+      hasNextPage: pageSize * page < totalCount,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
+      lastPage: Math.ceil(totalCount / pageSize),
+      success: true,
+    });
   } catch (error) {
     console.log("Error:", error);
     res.status(500).json({ message: "Something went wrong", success: false });

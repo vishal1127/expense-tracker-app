@@ -30,3 +30,7 @@ exports.getUserDownloadsList = (req) => {
 exports.getSingleExpense = (req, options) => {
   return req.user.getExpenses(options);
 };
+
+exports.countTotalExpenses = (req, options) => {
+  return req.user.countExpenses(options);
+};
