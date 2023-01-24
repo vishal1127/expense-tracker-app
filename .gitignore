@@ -1,8 +1,8 @@
 # folders
 client/pages/mainapp.html
-server/server.key
-server/server.cert
-server/sendgrid.env
+server.key
+server.cert
+sendgrid.env
 # Logs
 logs
 *.log
