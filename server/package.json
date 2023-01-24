@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Backend for expense tracker app",
   "main": "main.js",
+  "engines": {
+    "node": "14.16.0"
+  },
   "scripts": {
     "start": "node main.js",
     "start-server": "node main.js",
