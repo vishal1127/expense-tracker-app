@@ -72,7 +72,12 @@
     <main class="expense-body p-3">
       <div class="container">
         <!-- daily expense table -->
-        <h4 id="daily-title" class="table-title">Daily</h4>
+        <!-- <h4 id="daily-title" class="table-title">Daily</h4> -->
+        <div id="daily-date-row">
+        <a id="daily-prev-date" style="cursor: pointer; justify-self:center;"><i data-feather="chevron-left"></i></a>
+        <input id="daily-calendar" onkeydown="return false" type="date">
+        <a id="daily-next-date" style="cursor: pointer; justify-self:center;"><i data-feather="chevron-right"></i></a>
+      </div>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
@@ -95,7 +100,6 @@
         </table>
         <div class="d-flex">
           <div class="p-2 flex-grow-1"></div>
-          
         <select id="daily-page-size" class="form-select form-select-sm" style="width: 60px; height: 40px; margin-right: 10px;">
           <option value="5" selected>5</option>
           <option value="10">10</option>
@@ -115,7 +119,12 @@
         </div>
         <hr>
         <!-- monthly expense table -->
-        <h4 id="monthly-title" class="table-title">Monthly</h4>
+        <!-- <h4 id="monthly-title" class="table-title">Monthly</h4> -->
+        <div id="monthly-date-row">
+          <a id="monthly-prev-date" style="cursor: pointer; justify-self:center;"><i data-feather="chevron-left"></i></a>
+          <input id="monthly-calendar" onkeydown="return false" value="2022-05" type="month">
+          <a id="monthly-next-date" style="cursor: pointer; justify-self:center;"><i data-feather="chevron-right"></i></a>
+        </div>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>
@@ -157,7 +166,11 @@
         </div>
         <hr>
         <!-- yearly expense table -->
-        <h4 class="table-title">Yearly</h4>
+        <div id="monthly-date-row">
+          <a id="yearly-prev-date" style="cursor: pointer; justify-self:center;"><i data-feather="chevron-left"></i></a>
+          <h4 id="yearly-calendar" class="table-title"></h4>
+          <a id="yearly-next-date" style="cursor: pointer; justify-self:center;"><i data-feather="chevron-right"></i></a>
+        </div>
         <table class="table table-responsive table-dark table-striped">
           <thead>
             <tr>

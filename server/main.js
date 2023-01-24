@@ -1,6 +1,11 @@
 require("dotenv").config();
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const https = require("https");
 const bodyParser = require("body-parser");
+const helmet = require("helmet");
+const morgan = require("morgan");
 const cors = require("cors");
 
 const sequelize = require("./utils/database");
@@ -12,8 +17,19 @@ const ForgotPasswordRequest = require("./models/forgot-password-requests");
 const DownloadedExpenseReport = require("./models/downloaded-expense-report");
 
 const app = express();
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(helmet());
+app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 
 const userRoutes = require("./routes/user");
@@ -40,6 +56,9 @@ sequelize
   .sync()
   // .sync({ force: true })
   .then(() => {
-    app.listen(3000);
+    https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(process.env.PORT || 3000);
+    // app.listen(process.env.PORT || 3000);
   })
   .catch((err) => console.log(err));

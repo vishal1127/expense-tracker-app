@@ -80,7 +80,7 @@ exports.sendResetLink = async (req, res, next) => {
       from: "vishal.pb.27@gmail.com", // Change to your verified sender
       subject: "Link to reset your password",
       text: "Click the link below",
-      html: `<p>Click this link to <a href="http://localhost:3000/password/resetpassword/${resetPassword.id}">Reset password</a></p>`,
+      html: `<p>Click this link to <a href="https://localhost:3000/password/resetpassword/${resetPassword.id}">Reset password</a></p>`,
     };
     sgMail
       .send(msg)

@@ -1,4 +1,6 @@
-// $("#expenseModal").modal("show");
+// window.addEventListener("DOMContentLoaded", listAllExpenses);
+window.addEventListener("DOMContentLoaded", getListDataAndPagination);
+
 const expenseModal = document.querySelector("#expenseModal");
 const userName = document.querySelector(".UserName");
 const addExpenseBtn = document.getElementById("add-expense");
@@ -30,17 +32,43 @@ const monthlyPrevPageNoBtn = document.querySelector(".monthly-prev-page");
 const monthlyCurrPageNoBtn = document.querySelector(".monthly-curr-page");
 const monthlyNextPageNoBtn = document.querySelector(".monthly-next-page");
 const monthlyLastPageNoBtn = document.querySelector(".monthly-last-page");
-const dailyTableTitle = document.getElementById("daily-title");
-const monthlyTableTitle = document.getElementById("monthly-title");
+const dailyCalendar = document.getElementById("daily-calendar");
+const monthlyCalendar = document.getElementById("monthly-calendar");
+const yearlyCalendar = document.getElementById("yearly-calendar");
 const downloadReportBtn = document.getElementById("download-report");
+const currDate = new Date().toDateString();
+yearlyCalendar.innerText = new Date().getFullYear();
+document
+  .getElementById("daily-prev-date")
+  .addEventListener("click", getDailyPrevDate);
+document
+  .getElementById("daily-next-date")
+  .addEventListener("click", getDailyNextDate);
+document
+  .getElementById("monthly-prev-date")
+  .addEventListener("click", getMonthlyPrevDate);
+document
+  .getElementById("monthly-next-date")
+  .addEventListener("click", getMonthlyNextDate);
+document
+  .getElementById("yearly-prev-date")
+  .addEventListener("click", getYearlyPrevDate);
+document
+  .getElementById("yearly-next-date")
+  .addEventListener("click", getYearlyNextDate);
+// dailyCalendar.innerText = currDate;
+// const dailyCalendar = document.getElementById("daily-calendar");
+dailyCalendar.addEventListener("change", getCalendarDate);
+dailyCalendar.value = new Date().toISOString().slice(0, 10);
+monthlyCalendar.addEventListener("change", getCalendarDate);
+monthlyCalendar.value = new Date().toISOString().slice(0, 7);
+// dailyCalendar.addEventListener("click", getCurrDate);
 
 let dailyExpenseTable, monthlyExpenseTable, yearlyExpenseTable;
 let expenseList, dailyExpenseList, monthlyExpenseList;
 let dailyPageNumber = 1;
 let monthlyPageNumber = 1;
 
-window.addEventListener("DOMContentLoaded", listAllExpenses);
-window.addEventListener("DOMContentLoaded", getPagination);
 addExpenseBtn.addEventListener("click", addExpense);
 premiumBtn.addEventListener("click", buyPremium);
 signOutBtn.addEventListener("click", signOut);
@@ -65,7 +93,7 @@ async function addExpense(e) {
     try {
       if (!editId) {
         const result = await axios.post(
-          "http://localhost:3000/addExpense",
+          "https://localhost:3000/addExpense",
           expenseData,
           {
             headers: {
@@ -75,7 +103,7 @@ async function addExpense(e) {
         );
       } else {
         const response = await axios.post(
-          `http://localhost:3000/updateExpense/${editId}`,
+          `https://localhost:3000/updateExpense/${editId}`,
           expenseData,
           {
             headers: {
@@ -99,13 +127,13 @@ async function addExpense(e) {
 }
 
 //daily table data listing
+let dailyTotalExp = 0;
 async function dailyDateList(startDate, endDate) {
-  let dailyTotalExp = 0;
   dailyExpenseTable = document.getElementById("daily-expense-list-table");
   dailyExpenseTable.innerHTML = "";
   try {
     const response = await axios.get(
-      `http://localhost:3000/getExpenseList/${startDate}/${endDate}`,
+      `https://localhost:3000/getExpenseList/${startDate}/${endDate}`,
       {
         params: {
           pageSize: dailyPageSizeSelect.value,
@@ -124,7 +152,7 @@ async function dailyDateList(startDate, endDate) {
       dailyTotalExpenseVal
     );
     if (response.data.hasPrevPage) {
-      dailyPrevPageBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.prevPage})" class="page-link" href="#daily-title" aria-label="Previous">
+      dailyPrevPageBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.prevPage})" class="page-link" href="#daily-calendar" aria-label="Previous">
     <span aria-hidden="true">&laquo;</span>
   </a>`;
     } else {
@@ -134,7 +162,7 @@ async function dailyDateList(startDate, endDate) {
     }
     if (response.data.hasPrevPage) {
       dailyPrevPageNoBtn.style.display = "block";
-      dailyPrevPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.prevPage})" class="page-link" href="#daily-title">${response.data.prevPage}</a>`;
+      dailyPrevPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.prevPage})" class="page-link" href="#daily-calendar">${response.data.prevPage}</a>`;
     } else {
       dailyPrevPageNoBtn.style.display = "none";
     }
@@ -144,18 +172,18 @@ async function dailyDateList(startDate, endDate) {
       response.data.hasNextPage
     ) {
       dailyNextPageNoBtn.style.display = "block";
-      dailyNextPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.nextPage})" class="page-link" href="#daily-title">${response.data.nextPage}</a>`;
+      dailyNextPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.nextPage})" class="page-link" href="#daily-calendar">${response.data.nextPage}</a>`;
     } else {
       dailyNextPageNoBtn.style.display = "none";
     }
     if (response.data.lastPage != dailyPageNumber) {
       dailyLastPageNoBtn.style.display = "block";
-      dailyLastPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.lastPage})" class="page-link" href="#daily-title">${response.data.lastPage}</a>`;
+      dailyLastPageNoBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.lastPage})" class="page-link" href="#daily-calendar">${response.data.lastPage}</a>`;
     } else {
       dailyLastPageNoBtn.style.display = "none";
     }
     if (response.data.hasNextPage) {
-      dailyNextPageBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.nextPage})" class="page-link" href="#daily-title" aria-label="Next">
+      dailyNextPageBtn.innerHTML = `<a onclick="goToDailyPage(${response.data.nextPage})" class="page-link" href="#daily-calendar" aria-label="Next">
       <span aria-hidden="true">&raquo;</span>
     </a>`;
     } else {
@@ -169,12 +197,12 @@ async function dailyDateList(startDate, endDate) {
 }
 
 //monthly table data listing
+let monthlyTotalExp = 0;
 async function monthlyDateList(startDate, endDate) {
-  let monthlyTotalExp = 0;
   monthlyExpenseTable = document.getElementById("monthly-expense-list-table");
   monthlyExpenseTable.innerHTML = "";
   const response = await axios.get(
-    `http://localhost:3000/getExpenseList/${startDate}/${endDate}`,
+    `https://localhost:3000/getExpenseList/${startDate}/${endDate}`,
     {
       params: {
         pageSize: monthlyPageSizeSelect.value,
@@ -193,7 +221,7 @@ async function monthlyDateList(startDate, endDate) {
     monthlyTotalExpenseVal
   );
   if (response.data.hasPrevPage) {
-    monthlyPrevPageBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.prevPage})" class="page-link" href="#monthly-title" aria-label="Previous">
+    monthlyPrevPageBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.prevPage})" class="page-link" href="#monthly-calendar" aria-label="Previous">
   <span aria-hidden="true">&laquo;</span>
 </a>`;
   } else {
@@ -203,7 +231,7 @@ async function monthlyDateList(startDate, endDate) {
   }
   if (response.data.hasPrevPage) {
     monthlyPrevPageNoBtn.style.display = "block";
-    monthlyPrevPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.prevPage})" class="page-link" href="#monthly-title">${response.data.prevPage}</a>`;
+    monthlyPrevPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.prevPage})" class="page-link" href="#monthly-calendar">${response.data.prevPage}</a>`;
   } else {
     monthlyPrevPageNoBtn.style.display = "none";
   }
@@ -213,18 +241,18 @@ async function monthlyDateList(startDate, endDate) {
     response.data.hasNextPage
   ) {
     monthlyNextPageNoBtn.style.display = "block";
-    monthlyNextPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.nextPage})" class="page-link" href="#monthly-title">${response.data.nextPage}</a>`;
+    monthlyNextPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.nextPage})" class="page-link" href="#monthly-calendar">${response.data.nextPage}</a>`;
   } else {
     monthlyNextPageNoBtn.style.display = "none";
   }
   if (response.data.lastPage != monthlyPageNumber) {
     monthlyLastPageNoBtn.style.display = "block";
-    monthlyLastPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.lastPage})" class="page-link" href="#monthly-title">${response.data.lastPage}</a>`;
+    monthlyLastPageNoBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.lastPage})" class="page-link" href="#monthly-calendar">${response.data.lastPage}</a>`;
   } else {
     monthlyLastPageNoBtn.style.display = "none";
   }
   if (response.data.hasNextPage) {
-    monthlyNextPageBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.nextPage})" class="page-link" href="#monthly-title" aria-label="Next">
+    monthlyNextPageBtn.innerHTML = `<a onclick="goToMonthlyPage(${response.data.nextPage})" class="page-link" href="#monthly-calendar" aria-label="Next">
     <span aria-hidden="true">&raquo;</span>
   </a>`;
   } else {
@@ -234,29 +262,34 @@ async function monthlyDateList(startDate, endDate) {
   }
 }
 
+//current date,month,year
+let date = new Date(),
+  m = date.getMonth(),
+  y = date.getFullYear();
+
+//current day midnight and next day midnight
+let nextDateM = new Date(new Date().setDate(new Date().getDate() + 1));
+nextDateM.setHours(0, 0, 0, 0);
+let currDateM = date;
+currDateM.setHours(0, 0, 0, 0);
+
+//first and last day of current month
+let currMonthStart = new Date(y, m, 1);
+let currMonthEnd = new Date(y, m + 1, 0);
+
+//first day of current year and next year
+let currentYear = new Date().getFullYear();
+let firstDayCY = new Date(currentYear, 0, 1);
+let firstDayNY = new Date(currentYear, 11, 31);
 async function listAllExpenses() {
+  dailyTotalExp = 0;
+  monthlyTotalExp = 0;
   try {
-    //current date,month,year
-    const date = new Date(),
-      m = date.getMonth(),
-      y = date.getFullYear();
-
-    //current day midnight and next day midnight
-    let nextDateM = new Date(new Date().setDate(new Date().getDate() + 1));
-    nextDateM.setHours(0, 0, 0, 0);
-    let currDateM = date;
-    currDateM.setHours(0, 0, 0, 0);
-
-    //first day of current year and next year
-    const currentYear = new Date().getFullYear();
-    const firstDayCY = new Date(currentYear, 0, 1);
-    const firstDayNY = new Date(currentYear + 1, 0, 1);
-
     //daily data listing function call
     dailyDateList(currDateM, nextDateM);
 
     //monthly data listing function call
-    monthlyDateList(new Date(y, m, 1), new Date(y, m + 1, 0));
+    monthlyDateList(currMonthStart, currMonthEnd);
 
     //yearly data listing function call
     yearlyListing(firstDayCY, firstDayNY);
@@ -272,9 +305,7 @@ function datewiseListing(
   expenseList,
   tableName,
   totalExpVal,
-  totalExpValElement,
-  curPage,
-  pageSize
+  totalExpValElement
 ) {
   let result = "";
   expenseList.forEach((expense) => {
@@ -304,23 +335,20 @@ function datewiseListing(
       </button>
     </td></tr>`;
     totalExpVal += parseInt(expense.amount);
-    totalExpValElement.innerHTML = totalExpVal;
   });
+  totalExpValElement.innerHTML = totalExpVal;
   tableName.innerHTML = result;
 }
 
 //yearly table listing
+let yearlyMonthTotalExp = 0;
 async function yearlyListing(startDate, endDate) {
-  let yearlyMonthTotalExp = 0;
   yearlyExpenseTable = document.getElementById("yearly-expense-list-table");
   yearlyExpenseTable.innerHTML = "";
+  let yearlyMonthTotalExpense;
   const response = await axios.get(
-    `http://localhost:3000/getExpenseList/${startDate}/${endDate}`,
+    `https://localhost:3000/getExpenseList/${startDate}/${endDate}`,
     {
-      // params: {
-      //   pageSize: 2,
-      //   page: 1,
-      // },
       headers: {
         authorization: localStorage.getItem("Authorization"),
       },
@@ -328,28 +356,27 @@ async function yearlyListing(startDate, endDate) {
   );
   const yearlyData = response.data.expenseList;
   yearlyData.forEach((expense) => {
-    if (new Date().getFullYear() == new Date(expense.createdAt).getFullYear()) {
-      let month = new Date(expense.createdAt).toLocaleDateString("default", {
-        month: "long",
-      });
-      let yearlyMonthTotalExpense = document.getElementById(month);
-      if (!yearlyMonthTotalExpense) {
-        yearlyExpenseTable.innerHTML += `<tr>
+    let month = new Date(expense.createdAt).toLocaleDateString("default", {
+      month: "long",
+    });
+    yearlyMonthTotalExpense = document.getElementById(month);
+    if (yearlyMonthTotalExpense == null) {
+      yearlyMonthTotalExp = 0;
+      yearlyExpenseTable.innerHTML += `<tr>
         <td>${month}</td>
-        <td id="${month}">${expense.amount}</td>
+        <td id="${month}"></td>
         </tr>`;
-      }
-      yearlyMonthTotalExpense = document.getElementById(month);
-      yearlyMonthTotalExp += parseInt(expense.amount);
-      yearlyMonthTotalExpense.innerHTML = yearlyMonthTotalExp;
     }
+    yearlyMonthTotalExpense = document.getElementById(month);
+    yearlyMonthTotalExp += parseInt(expense.amount);
+    yearlyMonthTotalExpense.innerText = yearlyMonthTotalExp;
   });
 }
 
 async function buyPremium(e) {
   try {
     const payment = await axios.get(
-      "http://localhost:3000/purchase/buyPremium",
+      "https://localhost:3000/purchase/buyPremium",
       {
         headers: {
           authorization: localStorage.getItem("Authorization"),
@@ -362,7 +389,7 @@ async function buyPremium(e) {
       handler: async function (payment) {
         await axios
           .post(
-            "http://localhost:3000/purchase/updatePaymentStatus",
+            "https://localhost:3000/purchase/updatePaymentStatus",
             {
               order_id: options.order_id,
               payment_id: payment.razorpay_payment_id,
@@ -425,7 +452,7 @@ function parseJwt(token) {
 
 async function editExpense(id) {
   editId = id;
-  const response = await axios.get(`http://localhost:3000/getExpense/${id}`, {
+  const response = await axios.get(`https://localhost:3000/getExpense/${id}`, {
     headers: {
       authorization: localStorage.getItem("Authorization"),
     },
@@ -439,7 +466,7 @@ async function editExpense(id) {
 
 async function deleteExpense(id) {
   const deletedExpense = await axios.delete(
-    `http://localhost:3000/deleteExpense/${id}`,
+    `https://localhost:3000/deleteExpense/${id}`,
     {
       headers: {
         authorization: localStorage.getItem("Authorization"),
@@ -458,7 +485,7 @@ async function deleteExpense(id) {
 async function downloadReport() {
   try {
     const response = await axios.get(
-      "http://localhost:3000/expense/downloadAllExpenses",
+      "https://localhost:3000/expense/downloadAllExpenses",
       {
         headers: {
           authorization: localStorage.getItem("Authorization"),
@@ -493,11 +520,11 @@ function pageSizeChange(e) {
   };
   localStorage.setItem("Page size", JSON.stringify(pageSizes));
   updatePageSizes(dailyPageSizeSelect.value, monthlyPageSizeSelect.value);
-  if (e.target.id == "daily-page-size") dailyTableTitle.scrollIntoView();
-  else monthlyTableTitle.scrollIntoView();
+  if (e.target.id == "daily-page-size") dailyCalendar.scrollIntoView();
+  else monthlyCalendar.scrollIntoView();
 }
 
-function getPagination() {
+function getListDataAndPagination() {
   const allPageSizes = JSON.parse(localStorage.getItem("Page size"));
   if (allPageSizes) {
     dailyPageSizeSelect.value = allPageSizes.dailyPageSize;
@@ -509,5 +536,110 @@ function getPagination() {
 function updatePageSizes(dailyPageSizeVal, monthlyPageSizeVal) {
   dailyPageSize = dailyPageSizeVal;
   monthlyPageSize = monthlyPageSizeVal;
+  listAllExpenses();
+}
+
+function getCalendarDate(e) {
+  //daily
+  const dailyCalendarDate = dailyCalendar.value;
+  const dailyDate = new Date(formatDate(dailyCalendarDate));
+  currDateM = dailyDate;
+  nextDateM = new Date(new Date().setDate(new Date(dailyDate).getDate() + 1));
+  nextDateM.setHours(0, 0, 0, 0);
+
+  //monthly
+  const monthlyCalendarDate = monthlyCalendar.value + "-01";
+  const monthlyDate = new Date(formatDate(monthlyCalendarDate));
+  (m = monthlyDate.getMonth()), (y = monthlyDate.getFullYear());
+  currMonthStart = monthlyDate;
+  currMonthEnd = new Date(y, m + 1, 0);
+  listAllExpenses();
+}
+function formatDate(input) {
+  //convert yyyy/mm/dd to dd/mm/yyyy
+  const [year, month, day] = input.split("/");
+  return day + "/" + month + "/" + year;
+}
+//left arrow icon date calendar
+function getDailyPrevDate() {
+  const calendarDate = dailyCalendar.value;
+  //converting yyyy/mm/dd to prev date in UTC
+  let calendarPrevDate = new Date(
+    new Date().setDate(new Date(formatDate(calendarDate)).getDate() - 1)
+  );
+  //converting UTC to yyyy/mm/dd
+  dailyCalendar.value = calendarPrevDate.toISOString().slice(0, 10);
+  calendarPrevDate.setHours(0, 0, 0, 0);
+  currDateM = calendarPrevDate;
+  //converting prev day UTC to next day UTC
+  nextDateM = new Date(
+    new Date().setDate(new Date(calendarPrevDate).getDate() + 1)
+  );
+  nextDateM.setHours(0, 0, 0, 0);
+  listAllExpenses();
+}
+//right arrow icon date calendar
+function getDailyNextDate() {
+  const calendarDate = dailyCalendar.value;
+  //converting yyyy/mm/dd to next date in UTC
+  let calendarPrevDate = new Date(
+    new Date().setDate(new Date(formatDate(calendarDate)).getDate() + 1)
+  );
+  //converting UTC to yyyy/mm/dd
+  dailyCalendar.value = calendarPrevDate.toISOString().slice(0, 10);
+  calendarPrevDate.setHours(0, 0, 0, 0);
+  currDateM = calendarPrevDate;
+  //converting prev day UTC to next day UTC
+  nextDateM = new Date(
+    new Date().setDate(new Date(calendarPrevDate).getDate() + 1)
+  );
+  nextDateM.setHours(0, 0, 0, 0);
+  listAllExpenses();
+}
+
+//left arrow icon monthly calendar
+function getMonthlyPrevDate() {
+  // calculating and setting previous month
+  const monthlyCalendarDate = monthlyCalendar.value + "-01";
+  const monthlyDate = new Date(formatDate(monthlyCalendarDate));
+  (m = monthlyDate.getMonth()), (y = monthlyDate.getFullYear());
+  const prevMonth = new Date(y, m, 1).toISOString().slice(0, 7);
+  monthlyCalendar.value = prevMonth;
+  let prevMonthDate = prevMonth + "-01";
+  prevMonthDate = new Date(formatDate(prevMonthDate));
+  (m = prevMonthDate.getMonth()), (y = prevMonthDate.getFullYear());
+  currMonthStart = prevMonthDate;
+  currMonthEnd = new Date(y, m + 1, 0);
+
+  listAllExpenses();
+}
+function getMonthlyNextDate() {
+  // calculating and setting next month
+  const monthlyCalendarDate = monthlyCalendar.value + "-01";
+  const monthlyDate = new Date(formatDate(monthlyCalendarDate));
+  (m = monthlyDate.getMonth()), (y = monthlyDate.getFullYear());
+  const nextMonth = new Date(y, m + 2, 1).toISOString().slice(0, 7);
+  monthlyCalendar.value = nextMonth;
+  let nextMonthDate = nextMonth + "-01";
+  nextMonthDate = new Date(formatDate(nextMonthDate));
+  (m = nextMonthDate.getMonth()), (y = nextMonthDate.getFullYear());
+  currMonthStart = nextMonthDate;
+  currMonthEnd = new Date(y, m + 1, 0);
+  listAllExpenses();
+}
+
+function getYearlyPrevDate() {
+  let getPrevYear = +yearlyCalendar.innerText - 1;
+  yearlyCalendar.innerText = getPrevYear;
+  firstDayCY = new Date(getPrevYear, 0, 1);
+  firstDayNY = new Date(getPrevYear, 11, 31);
+  listAllExpenses();
+}
+
+function getYearlyNextDate() {
+  let getNextYear = +yearlyCalendar.innerText + 1;
+  yearlyCalendar.innerText = getNextYear;
+  firstDayCY = new Date(getNextYear, 0, 1);
+  firstDayNY = new Date(getNextYear, 11, 31);
   listAllExpenses();
 }

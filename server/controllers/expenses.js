@@ -23,6 +23,7 @@ exports.addExpense = async (req, res, next) => {
 
 exports.getAllExpenses = async (req, res, next) => {
   try {
+    // const allExpensesCount
     const startDate = req.params.startDate;
     const endDate = req.params.endDate;
     const pageSize = parseInt(req.query.pageSize);
@@ -34,7 +35,7 @@ exports.getAllExpenses = async (req, res, next) => {
         },
       },
       offset: (page - 1) * pageSize ? (page - 1) * pageSize : 0,
-      limit: pageSize ? pageSize : 12,
+      limit: pageSize ? pageSize : null,
     });
     const totalCount = await UserServices.countTotalExpenses(req, {
       where: {

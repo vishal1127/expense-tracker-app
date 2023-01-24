@@ -25,7 +25,7 @@ async function createAccount(e) {
         password: passwordField.value,
       };
       const response = await axios.post(
-        "http://localhost:3000/createUser",
+        "https://localhost:3000/createUser",
         userData
       );
       if (response) {
@@ -60,7 +60,7 @@ async function accountLogin(e) {
         password: passwordField.value,
       };
       const response = await axios.post(
-        "http://localhost:3000/signInUser",
+        "https://localhost:3000/signInUser",
         userData
       );
       const { name, email, isPremium } = response.data.user;
@@ -93,7 +93,7 @@ async function sendResetLink(e) {
         email: emailField.value,
       };
       const resetLink = await axios.post(
-        "http://localhost:3000/password/forgotpassword",
+        "https://localhost:3000/password/forgotpassword",
         userEmail
       );
     }

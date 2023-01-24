@@ -15,11 +15,14 @@ async function getListData() {
   if (leaderboardList) {
     try {
       leaderboardList.innerHTML = "";
-      const response = await axios.get("http://localhost:3000/getLeaderboard", {
-        headers: {
-          authorization: localStorage.getItem("Authorization"),
-        },
-      });
+      const response = await axios.get(
+        "https://localhost:3000/getLeaderboard",
+        {
+          headers: {
+            authorization: localStorage.getItem("Authorization"),
+          },
+        }
+      );
       for (listData of response.data.leaderboardList) {
         leaderboardList.innerHTML += `<li class="list-group-item list-group-item-primary">Name: ${
           listData.name
@@ -33,7 +36,7 @@ async function getListData() {
   } else if (downloadList) {
     try {
       const response = await axios.get(
-        "http://localhost:3000/getExpenseDownloadsList",
+        "https://localhost:3000/getExpenseDownloadsList",
         {
           headers: {
             authorization: localStorage.getItem("Authorization"),
