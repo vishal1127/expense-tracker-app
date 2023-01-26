@@ -1,5 +1,4 @@
 const Razorpay = require("razorpay");
-const Order = require("../models/order");
 const UserServices = require("../services/userServices");
 const OrderServices = require("../services/orderServices");
 const jwt = require("jsonwebtoken");

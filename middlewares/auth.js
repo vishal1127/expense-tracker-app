@@ -16,12 +16,12 @@ const auth = async (req, res, next) => {
       });
       req.user = user;
     } else {
-      res.status(401).json({ message: "Unauthorized user" });
+      res.status(401).json({ message: "Unauthorized User" });
     }
     next();
   } catch (error) {
     console.log("Error:", error);
-    res.status(401).json({ message: "Unauthorized user" });
+    res.status(401).json({ message: "Unauthorized User" });
   }
 };
 

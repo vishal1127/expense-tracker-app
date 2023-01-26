@@ -9,7 +9,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const sequelize = require("./utils/database");
-const authMiddleware = require("./middlewares/auth");
 const User = require("./models/user");
 const Expense = require("./models/expense");
 const Order = require("./models/order");
@@ -28,7 +27,6 @@ const accessLogStream = fs.createWriteStream(
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 
@@ -38,10 +36,13 @@ const purchaseRoutes = require("./routes/purchase");
 const premiumRoutes = require("./routes/premium");
 
 app.use(userRoutes);
-app.use(authMiddleware);
 app.use(expenseRoutes);
 app.use(purchaseRoutes);
 app.use(premiumRoutes);
+
+app.use((req, res, next) => {
+  res.sendFile(path.join(__dirname, `public/${req.url}`));
+});
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
