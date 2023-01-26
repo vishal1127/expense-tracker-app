@@ -1,4 +1,3 @@
-const sequelize = require("../utils/database");
 const UserServices = require("../services/userServices");
 const S3Services = require("../services/S3Services");
 const { Op } = require("sequelize");

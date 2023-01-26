@@ -1,18 +1,28 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/auth");
 
 const expenseControllers = require("../controllers/expenses");
 
-router.post("/addExpense", expenseControllers.addExpense);
+router.post("/addExpense", authMiddleware, expenseControllers.addExpense);
 
 router.get(
   "/getExpenseList/:startDate/:endDate",
+  authMiddleware,
   expenseControllers.getAllExpenses
 );
 
-router.delete("/deleteExpense/:expenseId", expenseControllers.deleteExpense);
+router.delete(
+  "/deleteExpense/:expenseId",
+  authMiddleware,
+  expenseControllers.deleteExpense
+);
 
-router.get("/expense/downloadAllExpenses", expenseControllers.downloadExpenses);
+router.get(
+  "/expense/downloadAllExpenses",
+  authMiddleware,
+  expenseControllers.downloadExpenses
+);
 
 router.get(
   "/getExpenseDownloadsList",
