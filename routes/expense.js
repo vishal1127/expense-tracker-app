@@ -26,11 +26,20 @@ router.get(
 
 router.get(
   "/getExpenseDownloadsList",
+  authMiddleware,
   expenseControllers.getUserFileDownloadsList
 );
 
-router.get("/getExpense/:expenseId", expenseControllers.getExpense);
+router.get(
+  "/getExpense/:expenseId",
+  authMiddleware,
+  expenseControllers.getExpense
+);
 
-router.post("/updateExpense/:expenseId", expenseControllers.updateExpense);
+router.post(
+  "/updateExpense/:expenseId",
+  authMiddleware,
+  expenseControllers.updateExpense
+);
 
 module.exports = router;
