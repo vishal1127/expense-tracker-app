@@ -16,7 +16,7 @@ async function getListData() {
     try {
       leaderboardList.innerHTML = "";
       const response = await axios.get(
-        "https://localhost:3000/getLeaderboard",
+        "http://3.144.24.244:3000/getLeaderboard",
         {
           headers: {
             authorization: localStorage.getItem("Authorization"),
@@ -36,7 +36,7 @@ async function getListData() {
   } else if (downloadList) {
     try {
       const response = await axios.get(
-        "https://localhost:3000/getExpenseDownloadsList",
+        "http://3.144.24.244:3000/getExpenseDownloadsList",
         {
           headers: {
             authorization: localStorage.getItem("Authorization"),
