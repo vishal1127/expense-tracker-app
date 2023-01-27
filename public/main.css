@@ -216,19 +216,19 @@ body {
   display: grid;
   justify-content: center;
   align-items: center;
-  grid-template-columns: 50px 285px 50px;
+  grid-template-columns: 36px 285px 36px;
 }
 
 #monthly-date-row {
   display: grid;
   justify-content: center;
   align-items: center;
-  grid-template-columns: 50px 315px 50px;
+  grid-template-columns: 36px 315px 36px;
 }
 
 /*date calendar*/
 input[type="date"] {
-  height: 40px;
+  /* height: 40px; */
   background-color: rgb(144, 145, 145);
   display: block;
   position: relative;
@@ -290,7 +290,7 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator:hover {
 }
 
 input[type="month"] {
-  height: 40px;
+  /* height: 40px; */
   background-color: rgb(144, 145, 145);
   display: block;
   position: relative;
@@ -362,5 +362,11 @@ input[type="month"]:hover::-webkit-calendar-picker-indicator:hover {
   .container {
     padding-left: 0;
     padding-right: 0;
+  }
+  .table > :not(caption) > * > * {
+    padding: 1px;
+  }
+  .table td + td + td + td + td {
+    display: grid;
   }
 }
